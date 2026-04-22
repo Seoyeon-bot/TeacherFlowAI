@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1f7a5a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>TeacherFlowAI Settings</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/app-icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="settings">
+    <div id="auth-shell" class="auth-shell is-hidden"></div>
+    <div class="page-shell">
+      <header class="hero compact-hero">
+        <nav class="topbar app-topbar">
+          <div class="brand"><span class="brand-mark">TF</span><span class="brand-name">TeacherFlowAI</span></div>
+          <button id="nav-toggle" class="nav-toggle ghost-button" type="button" aria-expanded="false" aria-controls="nav-menu">Menu</button>
+          <div id="nav-menu" class="nav-menu">
+            <a class="nav-link" href="./planning.html">Planning</a>
+            <a class="nav-link" href="./support.html">Student Support</a>
+            <a class="nav-link" href="./insights.html">Class Insights</a>
+            <a class="nav-link active" href="./settings.html">Settings</a>
+          </div>
+          <div class="topbar-actions">
+            <div id="teacher-identity" class="identity-chip">No teacher signed in</div>
+            <button id="sign-out-button" class="ghost-button" type="button">Sign Out</button>
+          </div>
+        </nav>
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Settings Workspace</p>
+            <h2>Profile, saved work, communications, alerts, and roster management.</h2>
+          </div>
+          <p class="hero-text compact-copy">This page is now a dedicated workspace instead of a hidden section.</p>
+        </div>
+      </header>
+
+      <main>
+        <div class="workspace-grid settings-workspace">
+          <section class="panel settings-sidebar">
+            <div class="panel-head">
+              <h3>Workspace Sections</h3>
+              <p>Tap a section on desktop or mobile to move through settings clearly.</p>
+            </div>
+            <div id="settings-tabs" class="settings-tabs" aria-label="Settings tabs">
+              <button class="settings-tab active" type="button" data-settings-tab="profile">Profile</button>
+              <button class="settings-tab" type="button" data-settings-tab="email">Email Provider</button>
+              <button class="settings-tab" type="button" data-settings-tab="history">Saved Work</button>
+              <button class="settings-tab" type="button" data-settings-tab="communications">Communications</button>
+              <button class="settings-tab" type="button" data-settings-tab="alerts">Alerts</button>
+              <button class="settings-tab" type="button" data-settings-tab="roster">Roster</button>
+            </div>
+          </section>
+
+          <section class="panel settings-panel active" id="settings-panel-profile">
+            <div class="panel-head"><h3>Teacher Profile</h3><p>Store personal and work information for your workspace.</p></div>
+            <form id="profile-form" class="stack">
+              <div class="field-grid">
+                <label>Full Name<input id="profile-name" name="name" type="text" placeholder="Seoyeon Choi" /></label>
+                <label>Work Email<input id="profile-email" name="email" type="email" placeholder="teacher@school.org" disabled /></label>
+              </div>
+              <div class="field-grid">
+                <label>School Name<input id="profile-school" name="school" type="text" placeholder="Lake Forest Academy" /></label>
+                <label>Role / Title<input id="profile-title" name="title" type="text" placeholder="Biology Teacher" /></label>
+              </div>
+              <div class="field-grid">
+                <label>Department<input id="profile-department" name="department" type="text" placeholder="Science" /></label>
+                <label>Phone<input id="profile-phone" name="phone" type="text" placeholder="(847) 555-0142" /></label>
+              </div>
+              <label>Preferred View<select id="profile-preferred-view" name="preferredView"><option value="desktop">Desktop Layout</option><option value="mobile">Mobile-First Layout</option><option value="auto">Auto Responsive</option></select></label>
+              <button class="primary-button" type="submit">Save Profile</button>
+            </form>
+            <div id="profile-status" class="status-message" aria-live="polite"></div>
+          </section>
+
+          <section class="panel settings-panel" id="settings-panel-email">
+            <div class="panel-head">
+              <h3>Email Provider</h3>
+              <p>Save your work email delivery settings here so password reset and future mail actions can send through your school account.</p>
+            </div>
+            <div class="panel-callout">
+              For Google Workspace or Gmail SMTP, use <code>smtp.gmail.com</code>, port <code>587</code>, and an app password or valid SMTP credential.
+            </div>
+            <form id="email-settings-form" class="stack">
+              <div class="field-grid">
+                <label>SMTP Host<input id="email-host" name="host" type="text" placeholder="smtp.gmail.com" required /></label>
+                <label>SMTP Port<input id="email-port" name="port" type="number" min="1" max="65535" placeholder="587" required /></label>
+              </div>
+              <div class="field-grid">
+                <label>Security
+                  <select id="email-secure" name="secure">
+                    <option value="false">STARTTLS / Upgrade Connection</option>
+                    <option value="true">TLS From Start</option>
+                  </select>
+                </label>
+                <label>Sender Address<input id="email-from-address" name="fromAddress" type="email" placeholder="teacher@school.org" /></label>
+              </div>
+              <div class="field-grid">
+                <label>SMTP Username<input id="email-username" name="username" type="email" placeholder="teacher@school.org" required /></label>
+                <label>SMTP Password<input id="email-password" name="password" type="password" placeholder="App password or SMTP password" /></label>
+              </div>
+              <div class="toolbar-row compact-toolbar">
+                <button class="primary-button" type="submit">Save Email Provider</button>
+              </div>
+            </form>
+            <div id="email-settings-status" class="status-message" aria-live="polite"></div>
+            <div class="stack email-test-stack">
+              <label>Send Test Email<input id="email-test-recipient" type="email" placeholder="teacher@school.org" /></label>
+              <div class="toolbar-row compact-toolbar">
+                <button id="send-test-email-button" class="secondary-button" type="button">Send Test Email</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel settings-panel" id="settings-panel-history">
+            <div class="panel-head"><h3>Saved Work And Previous Conversations</h3><p>See generated outputs and saved activity across the app.</p></div>
+            <div class="toolbar-row compact-toolbar">
+              <button id="clear-history-button" class="secondary-button" type="button">Delete All Saved Work</button>
+            </div>
+            <div id="history-list" class="activity-list"></div>
+          </section>
+
+          <section class="panel settings-panel" id="settings-panel-communications">
+            <div class="panel-head"><h3>Student Communication Tracker</h3><p>Track email drafts, reminders, and communication progress by student.</p></div>
+            <div class="toolbar-row compact-toolbar">
+              <button id="clear-communications-button" class="secondary-button" type="button">Delete All Communications</button>
+            </div>
+            <div id="communications-list" class="activity-list"></div>
+          </section>
+
+          <section class="panel settings-panel" id="settings-panel-alerts">
+            <div class="panel-head"><h3>Teacher Alerts</h3><p>Save follow-up reminders and optionally send them to Google Calendar for the work account you used to sign in.</p></div>
+            <form id="alert-form" class="stack">
+              <div class="field-grid">
+                <label>Alert Title<input name="title" type="text" placeholder="Call advisor about Mina Patel" required /></label>
+                <label>Due Date<input name="dueDate" type="date" /></label>
+              </div>
+              <div class="field-grid">
+                <label>Due Time<input name="dueTime" type="time" /></label>
+                <label>Calendar Sync
+                  <select name="calendarSync">
+                    <option value="local">Save in TeacherFlowAI only</option>
+                    <option value="google">Save and open Google Calendar</option>
+                  </select>
+                </label>
+              </div>
+              <label>Alert Notes<textarea name="description" rows="5" placeholder="What needs follow-up and why?" required></textarea></label>
+              <button class="primary-button" type="submit">Save Alert</button>
+            </form>
+            <div id="alert-status" class="status-message" aria-live="polite"></div>
+            <div class="toolbar-row compact-toolbar">
+              <button id="clear-alerts-button" class="secondary-button" type="button">Delete All Alerts</button>
+            </div>
+            <div id="alerts-list" class="activity-list"></div>
+          </section>
+
+          <section class="panel settings-panel" id="settings-panel-roster">
+            <div class="panel-head"><h3>Roster Import</h3><p>Download the sample CSV, fill in those exact columns, then upload your completed file.</p></div>
+            <div class="panel-callout">
+              Required schema:
+              <code>student_id,student_name,grade_level,class_name,attendance_percent,missing_assignments,late_submissions,participation_score,behavior_concern,recent_quiz_avg,recent_test_avg,score_trend,last_intervention_days_ago,teacher_notes</code>
+              Optional contact columns:
+              <code>advisor_email,parent_email</code>
+            </div>
+            <div class="upload-block">
+              <div class="sample-row"><a id="download-sample" class="secondary-button" href="#" download="teacherflowai-sample.csv">Download Sample CSV</a></div>
+              <p class="microcopy">Step 1: download the sample file. Step 2: fill in your real roster data. Step 3: upload the finished CSV below.</p>
+              <label>Paste TSV or CSV<textarea id="paste-import" rows="8" placeholder="Paste the fixed TeacherFlowAI schema here."></textarea></label>
+              <div class="toolbar-row compact-toolbar">
+                <label class="compact-field">Import Mode<select id="import-mode"><option value="append">Append to current roster</option><option value="replace">Replace my current roster</option></select></label>
+                <button id="paste-import-button" class="primary-button" type="button">Import Pasted Data</button>
+              </div>
+            </div>
+            <div class="upload-block">
+              <label class="file-upload">Upload CSV<input id="csv-upload" type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values,text/plain" /></label>
+              <div id="import-status" class="status-message" aria-live="polite"></div>
+            </div>
+            <div class="panel-head"><h3>Class-By-Class Roster Management</h3><p>Update advisor emails, parent emails, and notes one class at a time.</p></div>
+            <div id="class-settings" class="class-settings"></div>
+            <div class="field-grid"><label>Manage Class<select id="roster-class-select"></select></label></div>
+            <div id="roster-table" class="roster-table"></div>
+          </section>
+        </div>
+      </main>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1f7a5a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>TeacherFlowAI</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/app-icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="home">
+    <div id="auth-shell" class="auth-shell">
+      <section class="auth-card">
+        <div class="auth-copy">
+          <p class="eyebrow">TeacherFlowAI Access</p>
+          <h1>AI workflow software for actual school operations.</h1>
+          <p class="hero-text">
+            Sign in with your work email or Google Workspace. TeacherFlowAI now uses
+            separate product pages so planning, support, communication, and settings feel
+            like a real app instead of one long demo.
+          </p>
+        </div>
+        <div class="auth-panel">
+          <div class="auth-toggle">
+            <button id="sign-in-tab" class="filter-chip active" type="button">Sign In</button>
+            <button id="create-account-tab" class="filter-chip" type="button">Create Account</button>
+            <button id="reset-tab" class="filter-chip" type="button">Reset Password</button>
+          </div>
+          <form id="sign-in-form" class="stack auth-stack">
+            <label>Work Email<input name="email" type="email" placeholder="teacher@school.org" required /></label>
+            <label>Password<input name="password" type="password" placeholder="Enter your password" required /></label>
+            <button class="primary-button" type="submit">Sign In</button>
+            <button id="google-sign-in-button" class="secondary-button" type="button">Continue With Google Workspace</button>
+          </form>
+          <form id="create-account-form" class="stack auth-stack is-hidden">
+            <label>Work Email<input name="email" type="email" placeholder="teacher@school.org" required /></label>
+            <label>Full Name<input name="name" type="text" placeholder="Seoyeon Choi" required /></label>
+            <label>School Name<input name="school" type="text" placeholder="Lake Forest Academy" required /></label>
+            <label>Password<input name="password" type="password" placeholder="Create a password" required /></label>
+            <button class="primary-button" type="submit">Create Account</button>
+            <button id="google-create-button" class="secondary-button" type="button">Create With Google Workspace</button>
+          </form>
+          <form id="reset-request-form" class="stack auth-stack is-hidden">
+            <label>Work Email<input name="email" type="email" placeholder="teacher@school.org" required /></label>
+            <button class="primary-button" type="submit">Send Reset Email</button>
+          </form>
+          <form id="reset-confirm-form" class="stack auth-stack is-hidden">
+            <label>Work Email<input name="email" type="email" placeholder="teacher@school.org" required /></label>
+            <label>Reset Link Code<input name="token" type="text" placeholder="Opened from your reset email" required /></label>
+            <label>New Password<input name="password" type="password" placeholder="Create a new password" required /></label>
+            <button class="primary-button" type="submit">Reset Password</button>
+          </form>
+          <div id="auth-status" class="status-message" aria-live="polite"></div>
+        </div>
+      </section>
+    </div>
+
+    <div class="page-shell">
+      <header class="hero app-hero">
+        <nav class="topbar app-topbar">
+          <div class="brand">
+            <span class="brand-mark">TF</span>
+            <span class="brand-name">TeacherFlowAI</span>
+          </div>
+          <button id="nav-toggle" class="nav-toggle ghost-button" type="button" aria-expanded="false" aria-controls="nav-menu">
+            Menu
+          </button>
+          <div id="nav-menu" class="nav-menu">
+            <a class="nav-link" href="./planning.html">Planning</a>
+            <a class="nav-link" href="./support.html">Student Support</a>
+            <a class="nav-link" href="./insights.html">Class Insights</a>
+            <a class="nav-link" href="./settings.html">Settings</a>
+          </div>
+          <div class="topbar-actions">
+            <div id="teacher-identity" class="identity-chip">No teacher signed in</div>
+            <button id="sign-out-button" class="ghost-button" type="button">Sign Out</button>
+          </div>
+        </nav>
+
+        <div class="hero-grid">
+          <section class="hero-copy">
+            <p class="eyebrow">Teacher Workflow OS</p>
+            <h1>Clean, modular, buyable teacher software.</h1>
+            <p class="hero-text">
+              Use separate workspaces for lesson creation, repurposing, student support,
+              class insight, and account management. The product is now easier to scan on
+              desktop and easier to use on a phone.
+            </p>
+            <div class="hero-actions">
+              <a class="primary-button" href="./planning.html">Open Planning</a>
+              <a class="secondary-button" href="./support.html">Open Student Support</a>
+            </div>
+          </section>
+          <aside class="hero-panel">
+            <div class="metric-card">
+              <span class="metric-label">Students Reviewed</span>
+              <strong id="student-count">0</strong>
+              <p>Saved on the backend per teacher account.</p>
+            </div>
+            <div class="metric-card accent">
+              <span class="metric-label">High Support Students</span>
+              <strong id="high-priority-count">0</strong>
+              <p>Explainable risk scoring with reasons, outreach, and follow-up tools.</p>
+            </div>
+          </aside>
+        </div>
+      </header>
+
+      <main>
+        <section class="modules-strip">
+          <a class="module-card module-link-card" href="./planning.html">
+            <h3>Planning Workspace</h3>
+            <p>Generate a teaching pack once, then repurpose existing resources into classroom-ready formats.</p>
+          </a>
+          <a class="module-card module-link-card" href="./support.html">
+            <h3>Student Support</h3>
+            <p>Review support levels, flag reasons, intervention steps, outreach drafts, and summaries.</p>
+          </a>
+          <a class="module-card module-link-card" href="./insights.html">
+            <h3>Class Insights</h3>
+            <p>See class-level trends, likely reteach needs, outreach priorities, and admin-ready lesson outputs.</p>
+          </a>
+          <a class="module-card module-link-card" href="./settings.html">
+            <h3>Settings And History</h3>
+            <p>Manage your profile, saved work, communications, alerts, and class-by-class rosters.</p>
+          </a>
+        </section>
+
+        <section class="productivity-strip">
+          <article class="productivity-card">
+            <span class="metric-label">AI Prep Reduction</span>
+            <strong id="prep-hours-saved">0 hrs</strong>
+            <p>Estimated from teaching packs, repurposing, and support automation.</p>
+          </article>
+          <article class="productivity-card">
+            <span class="metric-label">Queued Outreach</span>
+            <strong id="draft-emails-count">0</strong>
+            <p>Students with email-ready communication data available.</p>
+          </article>
+          <article class="productivity-card">
+            <span class="metric-label">Intervention Queue</span>
+            <strong id="intervention-count">0</strong>
+            <p>Moderate and high support students who need attention soon.</p>
+          </article>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h3>What To Do First</h3>
+            <p>Move through the product like a real teacher workflow instead of scrolling through one giant page.</p>
+          </div>
+          <div class="output-grid">
+            <article class="output-card">
+              <h4>1. Planning</h4>
+              <p>Build a teaching pack or repurpose a worksheet, quiz, rubric, or notes set.</p>
+            </article>
+            <article class="output-card">
+              <h4>2. Student Support</h4>
+              <p>Import roster data and open a student detail panel for support reasons and outreach actions.</p>
+            </article>
+            <article class="output-card">
+              <h4>3. Insights</h4>
+              <p>Check class trends before the next meeting and convert any lesson into an admin-ready version.</p>
+            </article>
+            <article class="output-card">
+              <h4>4. Settings</h4>
+              <p>Save profile details, review stored history, manage communication progress, and set alerts.</p>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1f7a5a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>TeacherFlowAI Student Support</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/app-icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="support">
+    <div id="auth-shell" class="auth-shell is-hidden"></div>
+    <div class="page-shell">
+      <header class="hero compact-hero">
+        <nav class="topbar app-topbar">
+          <div class="brand"><span class="brand-mark">TF</span><span class="brand-name">TeacherFlowAI</span></div>
+          <button id="nav-toggle" class="nav-toggle ghost-button" type="button" aria-expanded="false" aria-controls="nav-menu">Menu</button>
+          <div id="nav-menu" class="nav-menu">
+            <a class="nav-link" href="./planning.html">Planning</a>
+            <a class="nav-link active" href="./support.html">Student Support</a>
+            <a class="nav-link" href="./insights.html">Class Insights</a>
+            <a class="nav-link" href="./settings.html">Settings</a>
+          </div>
+          <div class="topbar-actions">
+            <div id="teacher-identity" class="identity-chip">No teacher signed in</div>
+            <button id="sign-out-button" class="ghost-button" type="button">Sign Out</button>
+          </div>
+        </nav>
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Student Support</p>
+            <h2>Review support by priority, then take the next step.</h2>
+          </div>
+          <p class="hero-text compact-copy">Pick a student, see the risk summary, then draft outreach or set a reminder without digging through the page.</p>
+        </div>
+      </header>
+
+      <main>
+        <section class="panel workspace-command">
+          <div class="command-grid">
+            <label class="compact-field">Search Students<input id="student-search" type="search" placeholder="Search student, class, notes, or advisor email" /></label>
+            <label class="compact-field">
+              Sort Students
+              <select id="student-sort">
+                <option value="priority">Support level first</option>
+                <option value="name">Name A-Z</option>
+                <option value="score-high">Highest risk score</option>
+                <option value="missing">Most missing work</option>
+              </select>
+            </label>
+          </div>
+          <div class="support-toolbar">
+            <div id="priority-filters" class="filter-group">
+              <button class="filter-chip active" type="button" data-filter="all">All</button>
+              <button class="filter-chip" type="button" data-filter="high">High</button>
+              <button class="filter-chip" type="button" data-filter="moderate">Moderate</button>
+              <button class="filter-chip" type="button" data-filter="low">Low</button>
+            </div>
+          </div>
+          <div id="results-bar" class="results-bar"></div>
+        </section>
+
+        <section class="productivity-strip">
+          <article class="productivity-card"><span class="metric-label">Students Reviewed</span><strong id="student-count">0</strong><p>Loaded from the teacher roster.</p></article>
+          <article class="productivity-card"><span class="metric-label">High Support</span><strong id="high-priority-count">0</strong><p>Students needing priority attention.</p></article>
+          <article class="productivity-card"><span class="metric-label">Intervention Queue</span><strong id="intervention-count">0</strong><p>Moderate and high support students needing action.</p></article>
+        </section>
+
+        <section class="panel">
+          <div id="support-summary" class="summary-grid"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h3>Student Support Workspace</h3>
+            <p>Lists on the left. One clear action panel on the right.</p>
+          </div>
+          <div class="support-workspace">
+            <aside class="support-lists">
+              <section class="support-column">
+                <div class="support-column-head"><h4>High Support</h4><span id="high-list-count" class="queue-badge">0</span></div>
+                <div id="high-support-list" class="student-list"></div>
+              </section>
+              <section class="support-column">
+                <div class="support-column-head"><h4>Moderate Support</h4><span id="moderate-list-count" class="queue-badge">0</span></div>
+                <div id="moderate-support-list" class="student-list"></div>
+              </section>
+              <section class="support-column">
+                <div class="support-column-head"><h4>Low Support</h4><span id="low-list-count" class="queue-badge">0</span></div>
+                <div id="low-support-list" class="student-list"></div>
+              </section>
+            </aside>
+            <section id="student-detail" class="student-detail-panel"></section>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h3>AI Workload Queue</h3>
+            <p>What TeacherFlowAI can help the teacher do next.</p>
+          </div>
+          <div id="workload-queue" class="workload-queue"></div>
+        </section>
+      </main>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>

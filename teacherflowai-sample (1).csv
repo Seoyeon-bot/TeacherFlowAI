@@ -1,0 +1,4 @@
+student_id,student_name,grade_level,class_name,attendance_percent,missing_assignments,late_submissions,participation_score,behavior_concern,recent_quiz_avg,recent_test_avg,score_trend,last_intervention_days_ago,teacher_notes,advisor_email,parent_email
+S-1001,Mina Patel,10,Algebra II,91,3,2,2,medium,74,69,down,34,"Missed the last checkpoint and has been quiet during partner practice.",advisor.mina@school.org,family.mina@example.com
+S-1002,Jordan Lee,11,AP Computer Science,97,1,1,4,low,88,84,flat,12,"Strong verbal reasoning but written explanations stay rushed.",advisor.jordan@school.org,
+S-1003,Sofia Ramirez,9,Biology,88,2,3,3,medium,79,76,down,29,"Attendance gaps are slowing lab confidence and follow-through.",advisor.sofia@school.org,family.sofia@example.com

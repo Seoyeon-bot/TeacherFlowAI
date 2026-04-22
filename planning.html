@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1f7a5a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>TeacherFlowAI Planning</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/app-icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="planning">
+    <div id="auth-shell" class="auth-shell is-hidden"></div>
+    <div class="page-shell">
+      <header class="hero compact-hero">
+        <nav class="topbar app-topbar">
+          <div class="brand"><span class="brand-mark">TF</span><span class="brand-name">TeacherFlowAI</span></div>
+          <button id="nav-toggle" class="nav-toggle ghost-button" type="button" aria-expanded="false" aria-controls="nav-menu">Menu</button>
+          <div id="nav-menu" class="nav-menu">
+            <a class="nav-link active" href="./planning.html">Planning</a>
+            <a class="nav-link" href="./support.html">Student Support</a>
+            <a class="nav-link" href="./insights.html">Class Insights</a>
+            <a class="nav-link" href="./settings.html">Settings</a>
+          </div>
+          <div class="topbar-actions">
+            <div id="teacher-identity" class="identity-chip">No teacher signed in</div>
+            <button id="sign-out-button" class="ghost-button" type="button">Sign Out</button>
+          </div>
+        </nav>
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Planning Workspace</p>
+            <h2>Build fast, then repurpose fast.</h2>
+          </div>
+          <p class="hero-text compact-copy">Keep lesson generation and resource repurposing on one dedicated page.</p>
+        </div>
+      </header>
+
+      <main>
+        <div class="planning-shell">
+          <div class="planning-main">
+            <section class="panel planning-intro-panel">
+              <div class="panel-head">
+                <h3>Build By Use Case</h3>
+                <p>Choose the workflow that matches the day instead of sorting through long mixed outputs.</p>
+              </div>
+              <div class="planning-intro-grid">
+                <article class="planning-intro-card">
+                  <p class="eyebrow">Full Lesson</p>
+                  <h4>Teaching Pack</h4>
+                  <p>Creates a full-period lesson with pacing, interactive moves, classwork, homework, slides, and teacher key.</p>
+                </article>
+                <article class="planning-intro-card">
+                  <p class="eyebrow">Sub Coverage</p>
+                  <h4>Simple Sub Folder</h4>
+                  <p>Creates a short substitute overview plus the ready-to-print materials the sub can use without inventing anything.</p>
+                </article>
+                <article class="planning-intro-card">
+                  <p class="eyebrow">Rebuild</p>
+                  <h4>Version Builder</h4>
+                  <p>Turns one existing worksheet, quiz, lesson, or notes set into a cleaner classroom-ready version.</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-head">
+                <h3>One-Click Teaching Pack</h3>
+                <p>Generate a fuller, more interactive lesson pack that matches the length of your class period.</p>
+              </div>
+              <form id="teaching-pack-form" class="stack">
+                <div class="field-grid">
+                  <label>Topic<input name="topic" type="text" placeholder="Photosynthesis and energy transfer" required /></label>
+                  <label>Class Name<input name="className" type="text" placeholder="Biology" required /></label>
+                </div>
+                <div class="field-grid">
+                  <label>Grade Level<input name="gradeLevel" type="text" placeholder="9" required /></label>
+                  <label>Lesson Length<input name="duration" type="text" placeholder="50 minutes" required /></label>
+                </div>
+                <div class="field-grid">
+                  <label>Challenge Level
+                    <select name="challengeLevel">
+                      <option value="rigorous">Needs more rigor</option>
+                      <option value="grade-level" selected>Grade-level balance</option>
+                      <option value="support">Needs more support</option>
+                    </select>
+                  </label>
+                  <label>Lesson Style
+                    <select name="activityStyle">
+                      <option value="interactive">Interactive and teacher-led</option>
+                      <option value="balanced" selected>Balanced lesson flow</option>
+                      <option value="independent">Mostly independent work</option>
+                    </select>
+                  </label>
+                </div>
+                <label>Instructional Goal<textarea name="goal" rows="4" placeholder="Students will explain how light energy becomes chemical energy." required></textarea></label>
+                <button class="primary-button" type="submit">Generate Teaching Pack</button>
+              </form>
+            </section>
+            <div id="teaching-pack-output" class="output-grid"></div>
+
+            <section class="panel">
+              <div class="panel-head">
+                <h3>Sub Teacher Plan</h3>
+                <p>Keep the substitute plan short and organized while still generating the full materials packet when needed.</p>
+              </div>
+              <form id="sub-plan-form" class="stack">
+                <div class="field-grid">
+                  <label>Class Name<input name="className" type="text" placeholder="AP Computer Science Principles" required /></label>
+                  <label>Class Hour / Block<input name="classHour" type="text" placeholder="Block 3 · 10:15-11:05" required /></label>
+                </div>
+                <div class="field-grid">
+                  <label>Topic For The Day<input name="topic" type="text" placeholder="Python expressions and output" required /></label>
+                  <label>Lesson Length<input name="duration" type="text" placeholder="45 minutes" required /></label>
+                </div>
+                <label>What Students Already Know<textarea name="priorKnowledge" rows="3" placeholder="They already know variables, print(), and string concatenation." required></textarea></label>
+                <label>What The Sub Needs To Do<textarea name="coverageGoal" rows="4" placeholder="Have students complete a review sheet and a short code-writing practice. Collect work before the bell." required></textarea></label>
+                <div class="field-grid">
+                  <label>Sub Role
+                    <select name="subRole">
+                      <option value="teach" selected>Sub will teach the lesson</option>
+                      <option value="monitor">Sub mainly monitors work time</option>
+                    </select>
+                  </label>
+                  <label>Coverage Mode
+                    <select name="coverageMode">
+                      <option value="create">TeacherFlowAI creates the lesson materials</option>
+                      <option value="assessment">Teacher already has quiz / test / worksheet to use</option>
+                    </select>
+                  </label>
+                  <label>Assessment / Worksheet Upload
+                    <input id="sub-plan-file" name="subPlanFile" type="file" accept=".txt,.md,.csv,.tsv,.json,.html,.doc,.docx,.pdf" />
+                  </label>
+                </div>
+                <div class="field-grid">
+                  <label>Student Behavior / Seating Notes<textarea name="behaviorNotes" rows="4" placeholder="Jordan and Mina should not sit together. Attendance often takes extra time in this class."></textarea></label>
+                  <label>Materials / Links<textarea name="materials" rows="4" placeholder="Worksheet on desks, slides already projected, CodeHS activity open in browser."></textarea></label>
+                </div>
+                <label>Optional Lesson Video / Link<input name="lessonVideo" type="text" placeholder="https://... or a note such as 'Play district-approved review video first'" /></label>
+                <label>What Must Be Collected / Reported<textarea name="submissionNotes" rows="3" placeholder="Collect the worksheet and leave notes on who finished, who struggled, and any behavior issues."></textarea></label>
+                <button class="primary-button" type="submit">Generate Sub Plan</button>
+              </form>
+            </section>
+            <div id="sub-plan-output" class="output-grid"></div>
+
+            <section class="panel">
+              <div class="panel-head">
+                <h3>Assessment Version Builder</h3>
+                <p>Paste or upload one existing worksheet, quiz, or assessment and TeacherFlowAI will generate parallel versions that keep the same structure and skill targets.</p>
+              </div>
+              <form id="repurpose-form" class="stack">
+                <div class="field-grid">
+                  <label>
+                    Source Type
+                    <select name="sourceType">
+                      <option value="notes">Notes</option>
+                      <option value="worksheet">Worksheet</option>
+                      <option value="quiz">Quiz</option>
+                      <option value="lesson">Lesson</option>
+                      <option value="report">Report</option>
+                      <option value="rubric">Rubric</option>
+                    </select>
+                  </label>
+                  <label>
+                    Target Output
+                    <select name="targetType">
+                      <option value="parallel-assessment">Parallel Assessment Versions</option>
+                      <option value="lesson-plan">Lesson Plan</option>
+                      <option value="quiz">Quiz</option>
+                      <option value="reteach">Reteach Activity</option>
+                      <option value="observation">Observation Version</option>
+                      <option value="parent-email">Parent Email</option>
+                      <option value="feedback">Student Feedback Comments</option>
+                    </select>
+                  </label>
+                </div>
+                <label>Paste Existing Resource<textarea name="resourceText" rows="10" placeholder="Paste notes, worksheet text, rubric descriptors, or an assessment prompt here. You can also leave this blank and upload a file instead."></textarea></label>
+                <label>
+                  Or Upload Existing File
+                  <input id="repurpose-file" name="resourceFile" type="file" accept=".txt,.md,.csv,.tsv,.json,.html,.doc,.docx,.pdf" />
+                </label>
+                <div class="resource-actions">
+                  <button id="clear-repurpose-file" class="ghost-button" type="button">Remove Uploaded File</button>
+                  <span id="repurpose-file-status" class="microcopy">No file selected.</span>
+                </div>
+                <button class="primary-button" type="submit">Build New Version</button>
+              </form>
+            </section>
+            <div id="repurpose-output" class="output-grid"></div>
+          </div>
+
+          <aside class="panel planning-assistant">
+            <div class="panel-head">
+              <h3>AI Refinement Chat</h3>
+              <p>Ask for changes like “make this fill 55 minutes,” “turn this into a PPT outline,” or “simplify for a sub.”</p>
+            </div>
+            <div id="refine-chat-log" class="chat-log">
+              <article class="chat-bubble system">
+                Generate a teaching pack or repurpose output first, then refine it here.
+              </article>
+            </div>
+            <form id="refine-form" class="stack">
+              <label>
+                Refine Prompt
+                <textarea name="prompt" rows="5" placeholder="Make the first 15 minutes more interactive and add a stronger worked example." required></textarea>
+              </label>
+              <button class="primary-button" type="submit">Refine Output</button>
+            </form>
+          </aside>
+        </div>
+      </main>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "appId": "com.teacherflowai.app",
+  "appName": "TeacherFlowAI",
+  "webDir": "mobile-shell",
+  "server": {
+    "url": "https://teacherflowai.example.com",
+    "cleartext": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#f3f6f1",
+      "showSpinner": false
+    }
+  }
+}
