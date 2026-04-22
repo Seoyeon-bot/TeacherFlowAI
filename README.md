@@ -176,6 +176,7 @@ Important values:
 
 - `PORT`
 - `SESSION_SECRET`
+- `DATABASE_URL`
 - `APP_BASE_URL`
 - `GOOGLE_REDIRECT_URI`
 - `SMTP_HOST`
@@ -191,13 +192,18 @@ For local work, `.env.example` gives a starting template.
 
 ## Data Storage
 
-This app writes local data into the `data/` folder, including:
+TeacherFlowAI now supports two storage modes:
+
+- `DATABASE_URL` set: uses hosted PostgreSQL for users, students, and workspace activity
+- no `DATABASE_URL`: falls back to local JSON files in `data/`
+
+Local fallback files include:
 
 - `data/users.json`
 - `data/students.json`
 - `data/activities.json`
 
-Because of that, production hosting must support persistent storage.
+For free hosting, use a hosted PostgreSQL database and set `DATABASE_URL`.
 
 ## Deploying the App
 
@@ -207,8 +213,8 @@ The repo includes [render.yaml](/Users/seoyeonchoi/Desktop/LFA_Work/TeacherFlowA
 
 - Docker deployment
 - health check at `/healthz`
-- persistent disk mounted at `/app/data`
 - production environment structure
+- `DATABASE_URL` support for hosted PostgreSQL
 
 ### Render Steps
 
@@ -217,6 +223,7 @@ The repo includes [render.yaml](/Users/seoyeonchoi/Desktop/LFA_Work/TeacherFlowA
 3. Select this repository.
 4. Let Render create the service using `render.yaml`.
 5. Set the required environment variables:
+   - `DATABASE_URL=your-hosted-postgres-connection-string`
    - `APP_BASE_URL=https://your-service-name.onrender.com`
    - `GOOGLE_REDIRECT_URI=https://your-service-name.onrender.com/api/auth/google/callback`
 6. Add optional email and Google OAuth settings if you want those features enabled.
@@ -284,7 +291,7 @@ This repo is prepared for mobile packaging, but actual store publishing still re
 - final lesson quality still depends on how specific the teacher input is
 - the mobile app still depends on the deployed web backend
 - store submission work is not finished until live deployment and device testing are complete
-- local file-based storage is simple and useful for early deployment, but a future production version may want a real database
+- local fallback storage is still file-based when `DATABASE_URL` is not configured
 
 ## Sample Use Cases
 

@@ -22,15 +22,16 @@ That means:
 ## Before Building For App Store / Play Store
 
 1. Deploy the TeacherFlowAI web app and backend to a live HTTPS URL.
-2. The easiest path for this repo is Render because this app stores data in `data/` and needs a persistent disk.
+2. The easiest free-friendly path for this repo is Render plus a hosted PostgreSQL database.
 3. This repo includes `render.yaml` already configured for:
 
 - Docker deployment
 - `/healthz` checks
-- a persistent disk at `/app/data`
+- `DATABASE_URL` support for hosted PostgreSQL
 
 4. Set:
 
+- `DATABASE_URL=your-hosted-postgres-connection-string`
 - `APP_BASE_URL=https://your-live-domain.com`
 - `GOOGLE_REDIRECT_URI=https://your-live-domain.com/api/auth/google/callback`
 
@@ -53,9 +54,10 @@ npm run mobile:open:android
 1. Push this repo to GitHub.
 2. In Render, choose `New +` -> `Blueprint`.
 3. Select this repo. Render will read `render.yaml`.
-4. Let it create the web service and persistent disk.
+4. Let it create the web service.
 5. In the Render dashboard, set:
 
+- `DATABASE_URL=your-hosted-postgres-connection-string`
 - `APP_BASE_URL=https://your-service-name.onrender.com`
 - `GOOGLE_REDIRECT_URI=https://your-service-name.onrender.com/api/auth/google/callback`
 

@@ -7,6 +7,7 @@ const net = require("net");
 const tls = require("tls");
 const { execFileSync } = require("child_process");
 const { URL } = require("url");
+const { Pool } = require("pg");
 
 const ROOT = __dirname;
 loadEnvFile(path.join(ROOT, ".env"));
@@ -16,6 +17,7 @@ const USERS_FILE = path.join(DATA_DIR, "users.json");
 const STUDENTS_FILE = path.join(DATA_DIR, "students.json");
 const ACTIVITIES_FILE = path.join(DATA_DIR, "activities.json");
 const PORT = Number(process.env.PORT || 3000);
+const DATABASE_URL = process.env.DATABASE_URL || "";
 const SESSION_SECRET = process.env.SESSION_SECRET || "teacherflowai-dev-secret";
 const APP_BASE_URL = process.env.APP_BASE_URL || "";
 const SMTP_HOST = process.env.SMTP_HOST || "";
@@ -65,6 +67,7 @@ const KNOWN_SECTION_NAMES = [
 ];
 
 ensureDataStore();
+const storage = createStorage();
 
 const server = http.createServer(async (req, res) => {
   try {
@@ -89,9 +92,7 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => {
-  console.log(`TeacherFlowAI running on http://localhost:${PORT}`);
-});
+startServer();
 
 function loadEnvFile(filePath) {
   if (!fs.existsSync(filePath)) {
@@ -139,6 +140,242 @@ function ensureDataStore() {
   }
   if (!fs.existsSync(ACTIVITIES_FILE)) {
     fs.writeFileSync(ACTIVITIES_FILE, "{}\n", "utf8");
+  }
+}
+
+function shouldUseDatabaseSsl(connectionString) {
+  if (!connectionString) {
+    return false;
+  }
+  if (/sslmode=disable/i.test(connectionString)) {
+    return false;
+  }
+  return !/localhost|127\.0\.0\.1/i.test(connectionString);
+}
+
+function mapUserRow(row) {
+  return {
+    id: row.id,
+    email: row.email,
+    name: row.name,
+    school: row.school || "",
+    title: row.title || "",
+    department: row.department || "",
+    phone: row.phone || "",
+    preferredView: row.preferred_view || "desktop",
+    authProvider: row.auth_provider || "local",
+    emailSettings: row.email_settings || {},
+    passwordHash: row.password_hash || "",
+    passwordReset: row.password_reset || null,
+    createdAt: row.created_at,
+    passwordUpdatedAt: row.password_updated_at || "",
+  };
+}
+
+function mapUserToRow(user) {
+  return [
+    user.id,
+    user.email,
+    user.name,
+    user.school || "",
+    user.title || "",
+    user.department || "",
+    user.phone || "",
+    user.preferredView || "desktop",
+    user.authProvider || "local",
+    JSON.stringify(user.emailSettings || {}),
+    user.passwordHash || "",
+    user.passwordReset ? JSON.stringify(user.passwordReset) : null,
+    user.createdAt || new Date().toISOString(),
+    user.passwordUpdatedAt || null,
+  ];
+}
+
+function createStorage() {
+  if (!DATABASE_URL) {
+    return {
+      mode: "file",
+      async init() {},
+      async readUsers() {
+        return readJson(USERS_FILE, []);
+      },
+      async writeUsers(users) {
+        writeJson(USERS_FILE, users);
+      },
+      async readStudentsStore() {
+        return readJson(STUDENTS_FILE, {});
+      },
+      async writeStudentsStore(store) {
+        writeJson(STUDENTS_FILE, store);
+      },
+      async readActivitiesStore() {
+        return readJson(ACTIVITIES_FILE, {});
+      },
+      async writeActivitiesStore(store) {
+        writeJson(ACTIVITIES_FILE, store);
+      },
+    };
+  }
+
+  const pool = new Pool({
+    connectionString: DATABASE_URL,
+    ssl: shouldUseDatabaseSsl(DATABASE_URL) ? { rejectUnauthorized: false } : undefined,
+  });
+
+  return {
+    mode: "postgres",
+    async init() {
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS users (
+          id TEXT PRIMARY KEY,
+          email TEXT UNIQUE NOT NULL,
+          name TEXT NOT NULL,
+          school TEXT NOT NULL DEFAULT '',
+          title TEXT NOT NULL DEFAULT '',
+          department TEXT NOT NULL DEFAULT '',
+          phone TEXT NOT NULL DEFAULT '',
+          preferred_view TEXT NOT NULL DEFAULT 'desktop',
+          auth_provider TEXT NOT NULL DEFAULT 'local',
+          email_settings JSONB NOT NULL DEFAULT '{}'::jsonb,
+          password_hash TEXT NOT NULL DEFAULT '',
+          password_reset JSONB,
+          created_at TEXT NOT NULL,
+          password_updated_at TEXT
+        )
+      `);
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS teacher_state (
+          user_id TEXT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+          students_json JSONB NOT NULL DEFAULT '[]'::jsonb,
+          activities_json JSONB NOT NULL DEFAULT '[]'::jsonb
+        )
+      `);
+    },
+    async readUsers() {
+      const result = await pool.query("SELECT * FROM users ORDER BY created_at ASC");
+      return result.rows.map(mapUserRow);
+    },
+    async writeUsers(users) {
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        const ids = users.map((user) => user.id);
+        if (ids.length) {
+          await client.query("DELETE FROM users WHERE NOT (id = ANY($1::text[]))", [ids]);
+        } else {
+          await client.query("DELETE FROM users");
+        }
+        for (const user of users) {
+          await client.query(
+            `
+              INSERT INTO users (
+                id, email, name, school, title, department, phone,
+                preferred_view, auth_provider, email_settings, password_hash,
+                password_reset, created_at, password_updated_at
+              )
+              VALUES (
+                $1, $2, $3, $4, $5, $6, $7,
+                $8, $9, $10::jsonb, $11,
+                $12::jsonb, $13, $14
+              )
+              ON CONFLICT (id) DO UPDATE SET
+                email = EXCLUDED.email,
+                name = EXCLUDED.name,
+                school = EXCLUDED.school,
+                title = EXCLUDED.title,
+                department = EXCLUDED.department,
+                phone = EXCLUDED.phone,
+                preferred_view = EXCLUDED.preferred_view,
+                auth_provider = EXCLUDED.auth_provider,
+                email_settings = EXCLUDED.email_settings,
+                password_hash = EXCLUDED.password_hash,
+                password_reset = EXCLUDED.password_reset,
+                created_at = EXCLUDED.created_at,
+                password_updated_at = EXCLUDED.password_updated_at
+            `,
+            mapUserToRow(user),
+          );
+        }
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
+    },
+    async readStudentsStore() {
+      const result = await pool.query("SELECT user_id, students_json FROM teacher_state");
+      return result.rows.reduce((store, row) => {
+        store[row.user_id] = Array.isArray(row.students_json) ? row.students_json : [];
+        return store;
+      }, {});
+    },
+    async writeStudentsStore(store) {
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        for (const [userId, students] of Object.entries(store)) {
+          await client.query(
+            `
+              INSERT INTO teacher_state (user_id, students_json)
+              VALUES ($1, $2::jsonb)
+              ON CONFLICT (user_id) DO UPDATE SET
+                students_json = EXCLUDED.students_json
+            `,
+            [userId, JSON.stringify(Array.isArray(students) ? students : [])],
+          );
+        }
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
+    },
+    async readActivitiesStore() {
+      const result = await pool.query("SELECT user_id, activities_json FROM teacher_state");
+      return result.rows.reduce((store, row) => {
+        store[row.user_id] = Array.isArray(row.activities_json) ? row.activities_json : [];
+        return store;
+      }, {});
+    },
+    async writeActivitiesStore(store) {
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        for (const [userId, activities] of Object.entries(store)) {
+          await client.query(
+            `
+              INSERT INTO teacher_state (user_id, activities_json)
+              VALUES ($1, $2::jsonb)
+              ON CONFLICT (user_id) DO UPDATE SET
+                activities_json = EXCLUDED.activities_json
+            `,
+            [userId, JSON.stringify(Array.isArray(activities) ? activities : [])],
+          );
+        }
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
+    },
+  };
+}
+
+async function startServer() {
+  try {
+    await storage.init();
+    server.listen(PORT, () => {
+      console.log(`TeacherFlowAI running on http://localhost:${PORT} using ${storage.mode} storage`);
+    });
+  } catch (error) {
+    console.error("TeacherFlowAI failed to start:", error);
+    process.exit(1);
   }
 }
 
@@ -204,28 +441,28 @@ function writeJson(filePath, payload) {
   fs.writeFileSync(filePath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
 }
 
-function readUsers() {
-  return readJson(USERS_FILE, []);
+async function readUsers() {
+  return storage.readUsers();
 }
 
-function writeUsers(users) {
-  writeJson(USERS_FILE, users);
+async function writeUsers(users) {
+  await storage.writeUsers(users);
 }
 
-function readStudentsStore() {
-  return readJson(STUDENTS_FILE, {});
+async function readStudentsStore() {
+  return storage.readStudentsStore();
 }
 
-function writeStudentsStore(store) {
-  writeJson(STUDENTS_FILE, store);
+async function writeStudentsStore(store) {
+  await storage.writeStudentsStore(store);
 }
 
-function readActivitiesStore() {
-  return readJson(ACTIVITIES_FILE, {});
+async function readActivitiesStore() {
+  return storage.readActivitiesStore();
 }
 
-function writeActivitiesStore(store) {
-  writeJson(ACTIVITIES_FILE, store);
+async function writeActivitiesStore(store) {
+  await storage.writeActivitiesStore(store);
 }
 
 function sanitizeUser(user) {
@@ -1665,14 +1902,15 @@ function createSession(userId) {
   return sessionId;
 }
 
-function getSessionUser(req) {
+async function getSessionUser(req) {
   const cookies = parseCookies(req);
   const sessionId = cookies[SESSION_COOKIE];
   if (!sessionId || !sessions.has(sessionId)) {
     return null;
   }
   const session = sessions.get(sessionId);
-  return readUsers().find((user) => user.id === session.userId) || null;
+  const users = await readUsers();
+  return users.find((user) => user.id === session.userId) || null;
 }
 
 function clearSession(res, req) {
@@ -1700,8 +1938,8 @@ async function readBody(req) {
   return JSON.parse(raw);
 }
 
-function requireUser(req, res) {
-  const user = getSessionUser(req);
+async function requireUser(req, res) {
+  const user = await getSessionUser(req);
   if (!user) {
     json(res, 401, { error: "You need to sign in first." });
     return null;
@@ -1709,52 +1947,53 @@ function requireUser(req, res) {
   return user;
 }
 
-function getUserStudents(userId) {
-  const store = readStudentsStore();
+async function getUserStudents(userId) {
+  const store = await readStudentsStore();
   return Array.isArray(store[userId]) ? store[userId] : [];
 }
 
-function setUserStudents(userId, students) {
-  const store = readStudentsStore();
+async function setUserStudents(userId, students) {
+  const store = await readStudentsStore();
   store[userId] = students;
-  writeStudentsStore(store);
+  await writeStudentsStore(store);
 }
 
-function getUserActivities(userId) {
-  const store = readActivitiesStore();
+async function getUserActivities(userId) {
+  const store = await readActivitiesStore();
   return Array.isArray(store[userId]) ? store[userId] : [];
 }
 
-function setUserActivities(userId, activities) {
-  const store = readActivitiesStore();
+async function setUserActivities(userId, activities) {
+  const store = await readActivitiesStore();
   store[userId] = activities;
-  writeActivitiesStore(store);
+  await writeActivitiesStore(store);
 }
 
-function findUserByEmail(email) {
+async function findUserByEmail(email) {
   const normalized = normalizeEmail(email);
-  return readUsers().find((user) => user.email === normalized) || null;
+  const users = await readUsers();
+  return users.find((user) => user.email === normalized) || null;
 }
 
-function appendUserActivity(userId, activity) {
-  const activities = getUserActivities(userId);
+async function appendUserActivity(userId, activity) {
+  const activities = await getUserActivities(userId);
   activities.unshift({
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
     ...activity,
   });
-  setUserActivities(userId, activities.slice(0, 120));
+  await setUserActivities(userId, activities.slice(0, 120));
 }
 
-function deleteUserActivity(userId, activityId) {
-  const activities = getUserActivities(userId);
+async function deleteUserActivity(userId, activityId) {
+  const activities = await getUserActivities(userId);
   const nextActivities = activities.filter((item) => item.id !== activityId);
-  setUserActivities(userId, nextActivities);
+  await setUserActivities(userId, nextActivities);
   return nextActivities;
 }
 
-function clearUserActivitiesByScope(userId, scope) {
-  const activities = getUserActivities(userId);
+async function clearUserActivitiesByScope(userId, scope) {
+  const activities = await getUserActivities(userId);
   const nextActivities = activities.filter((item) => {
     if (scope === "all") {
       return false;
@@ -1770,7 +2009,7 @@ function clearUserActivitiesByScope(userId, scope) {
     }
     return true;
   });
-  setUserActivities(userId, nextActivities);
+  await setUserActivities(userId, nextActivities);
   return nextActivities;
 }
 
@@ -1822,7 +2061,7 @@ async function exchangeGoogleCodeForProfile(code, origin) {
 
 async function handleApi(req, res, url) {
   if (req.method === "GET" && url.pathname === "/api/auth/session") {
-    const user = getSessionUser(req);
+    const user = await getSessionUser(req);
     json(res, 200, { authenticated: Boolean(user), user: user ? sanitizeUser(user) : null });
     return;
   }
@@ -1839,7 +2078,7 @@ async function handleApi(req, res, url) {
       return;
     }
 
-    const users = readUsers();
+    const users = await readUsers();
     if (users.some((user) => user.email === email)) {
       json(res, 409, { error: "That work email already has an account." });
       return;
@@ -1861,9 +2100,9 @@ async function handleApi(req, res, url) {
       createdAt: new Date().toISOString(),
     };
     users.push(user);
-    writeUsers(users);
-    setUserStudents(user.id, []);
-    setUserActivities(user.id, []);
+    await writeUsers(users);
+    await setUserStudents(user.id, []);
+    await setUserActivities(user.id, []);
 
     const sessionId = createSession(user.id);
     json(
@@ -1886,7 +2125,7 @@ async function handleApi(req, res, url) {
     const body = await readBody(req);
     const email = normalizeEmail(body.email);
     const password = String(body.password || "");
-    const user = findUserByEmail(email);
+    const user = await findUserByEmail(email);
 
     if (!user || !user.passwordHash || !verifyPassword(password, user.passwordHash)) {
       json(res, 401, { error: "Invalid email or password." });
@@ -1925,7 +2164,7 @@ async function handleApi(req, res, url) {
   if (req.method === "POST" && url.pathname === "/api/auth/password-reset/request") {
     const body = await readBody(req);
     const email = normalizeEmail(body.email);
-    const users = readUsers();
+    const users = await readUsers();
     const userIndex = users.findIndex((candidate) => candidate.email === email);
     if (userIndex === -1) {
       json(res, 200, { ok: true, message: "If that account exists, a password reset email has been sent." });
@@ -1938,7 +2177,7 @@ async function handleApi(req, res, url) {
       expiresAt: Date.now() + 1000 * 60 * 30,
       requestedAt: new Date().toISOString(),
     };
-    writeUsers(users);
+    await writeUsers(users);
 
     try {
       await sendPasswordResetEmail(req, email, resetToken, users[userIndex].emailSettings || null);
@@ -1962,7 +2201,7 @@ async function handleApi(req, res, url) {
     const email = normalizeEmail(body.email);
     const token = String(body.token || "").trim();
     const password = String(body.password || "");
-    const users = readUsers();
+    const users = await readUsers();
     const userIndex = users.findIndex((candidate) => candidate.email === email);
 
     if (userIndex === -1 || !users[userIndex].passwordReset) {
@@ -1977,7 +2216,7 @@ async function handleApi(req, res, url) {
     }
     if (Date.now() > Number(resetRecord.expiresAt || 0)) {
       users[userIndex].passwordReset = null;
-      writeUsers(users);
+      await writeUsers(users);
       json(res, 400, { error: "Reset token expired. Request a new one." });
       return;
     }
@@ -1989,7 +2228,7 @@ async function handleApi(req, res, url) {
     users[userIndex].passwordHash = hashPassword(password);
     users[userIndex].passwordReset = null;
     users[userIndex].passwordUpdatedAt = new Date().toISOString();
-    writeUsers(users);
+    await writeUsers(users);
 
     const sessionId = createSession(users[userIndex].id);
     json(
@@ -2057,7 +2296,7 @@ async function handleApi(req, res, url) {
         throw new Error("Google did not return an email address.");
       }
 
-      const users = readUsers();
+      const users = await readUsers();
       let user = users.find((candidate) => candidate.email === email);
       if (!user) {
         user = {
@@ -2080,14 +2319,14 @@ async function handleApi(req, res, url) {
         user.name = String(profile.name || user.name || email).trim();
         user.authProvider = "google";
       }
-      writeUsers(users);
-      const studentStore = readStudentsStore();
+      await writeUsers(users);
+      const studentStore = await readStudentsStore();
       if (!Array.isArray(studentStore[user.id])) {
-        setUserStudents(user.id, []);
+        await setUserStudents(user.id, []);
       }
-      const activityStore = readActivitiesStore();
+      const activityStore = await readActivitiesStore();
       if (!Array.isArray(activityStore[user.id])) {
-        setUserActivities(user.id, []);
+        await setUserActivities(user.id, []);
       }
 
       const sessionId = createSession(user.id);
@@ -2125,16 +2364,16 @@ async function handleApi(req, res, url) {
   }
 
   if (req.method === "GET" && url.pathname === "/api/students") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
-    json(res, 200, { students: getUserStudents(user.id) });
+    json(res, 200, { students: await getUserStudents(user.id) });
     return;
   }
 
   if (req.method === "POST" && url.pathname === "/api/resources/transform") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
@@ -2169,7 +2408,7 @@ async function handleApi(req, res, url) {
     }
 
     const result = buildAssessmentTransform(mergedText, sourceType, targetType);
-    appendUserActivity(user.id, {
+    await appendUserActivity(user.id, {
       type: "repurpose",
       title: fileName ? `Generated parallel assessment from ${fileName}` : "Generated parallel assessment from pasted resource",
       description: result.summary,
@@ -2190,7 +2429,7 @@ async function handleApi(req, res, url) {
   }
 
   if (req.method === "GET" && url.pathname === "/api/profile") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
@@ -2199,13 +2438,13 @@ async function handleApi(req, res, url) {
   }
 
   if (req.method === "PATCH" && url.pathname === "/api/profile") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
 
     const body = await readBody(req);
-    const users = readUsers();
+    const users = await readUsers();
     const index = users.findIndex((candidate) => candidate.id === user.id);
     if (index === -1) {
       json(res, 404, { error: "Teacher account not found." });
@@ -2224,8 +2463,8 @@ async function handleApi(req, res, url) {
         : users[index].preferredView || "desktop",
     };
 
-    writeUsers(users);
-    appendUserActivity(user.id, {
+    await writeUsers(users);
+    await appendUserActivity(user.id, {
       type: "profile_update",
       title: "Updated teacher profile",
       description: "Account information and display preferences were updated.",
@@ -2235,7 +2474,7 @@ async function handleApi(req, res, url) {
   }
 
   if (req.method === "GET" && url.pathname === "/api/settings/email") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
@@ -2244,13 +2483,13 @@ async function handleApi(req, res, url) {
   }
 
   if (req.method === "PATCH" && url.pathname === "/api/settings/email") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
 
     const body = await readBody(req);
-    const users = readUsers();
+    const users = await readUsers();
     const index = users.findIndex((candidate) => candidate.id === user.id);
     if (index === -1) {
       json(res, 404, { error: "Teacher account not found." });
@@ -2268,8 +2507,8 @@ async function handleApi(req, res, url) {
     }
 
     users[index].emailSettings = getEncryptedEmailSettings(nextSettings);
-    writeUsers(users);
-    appendUserActivity(user.id, {
+    await writeUsers(users);
+    await appendUserActivity(user.id, {
       type: "profile_update",
       title: "Updated email provider settings",
       description: `SMTP delivery is configured for ${nextSettings.username}.`,
@@ -2279,13 +2518,13 @@ async function handleApi(req, res, url) {
   }
 
   if (req.method === "POST" && url.pathname === "/api/settings/email/test") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
 
     const body = await readBody(req);
-    const users = readUsers();
+    const users = await readUsers();
     const current = users.find((candidate) => candidate.id === user.id);
     const savedConfig = current?.emailSettings || {};
     if (!sanitizeEmailSettings(savedConfig).configured) {
@@ -2320,37 +2559,37 @@ async function handleApi(req, res, url) {
   }
 
   if (req.method === "GET" && url.pathname === "/api/workspace") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
-    json(res, 200, { activities: getUserActivities(user.id) });
+    json(res, 200, { activities: await getUserActivities(user.id) });
     return;
   }
 
   if (req.method === "DELETE" && url.pathname === "/api/workspace") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
     const scope = String(url.searchParams.get("scope") || "all").trim().toLowerCase();
-    json(res, 200, { ok: true, activities: clearUserActivitiesByScope(user.id, scope) });
+    json(res, 200, { ok: true, activities: await clearUserActivitiesByScope(user.id, scope) });
     return;
   }
 
   if (req.method === "POST" && url.pathname === "/api/workspace/clear") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
     const body = await readBody(req);
     const scope = String(body.scope || "all").trim().toLowerCase();
-    json(res, 200, { ok: true, activities: clearUserActivitiesByScope(user.id, scope) });
+    json(res, 200, { ok: true, activities: await clearUserActivitiesByScope(user.id, scope) });
     return;
   }
 
   if (req.method === "POST" && url.pathname === "/api/workspace/activity") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
@@ -2364,7 +2603,7 @@ async function handleApi(req, res, url) {
       return;
     }
 
-    appendUserActivity(user.id, {
+    await appendUserActivity(user.id, {
       type,
       title,
       description,
@@ -2375,23 +2614,23 @@ async function handleApi(req, res, url) {
       dueDate: String(body.dueDate || "").trim(),
       dueTime: String(body.dueTime || "").trim(),
     });
-    json(res, 201, { ok: true, activities: getUserActivities(user.id) });
+    json(res, 201, { ok: true, activities: await getUserActivities(user.id) });
     return;
   }
 
   const activityDeleteMatch = req.method === "DELETE" && url.pathname.match(/^\/api\/workspace\/activity\/([^/]+)$/);
   if (activityDeleteMatch) {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
     const activityId = decodeURIComponent(activityDeleteMatch[1]);
-    json(res, 200, { ok: true, activities: deleteUserActivity(user.id, activityId) });
+    json(res, 200, { ok: true, activities: await deleteUserActivity(user.id, activityId) });
     return;
   }
 
   if (req.method === "POST" && url.pathname === "/api/workspace/activity/delete") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
@@ -2401,12 +2640,12 @@ async function handleApi(req, res, url) {
       json(res, 400, { error: "Activity id is required." });
       return;
     }
-    json(res, 200, { ok: true, activities: deleteUserActivity(user.id, activityId) });
+    json(res, 200, { ok: true, activities: await deleteUserActivity(user.id, activityId) });
     return;
   }
 
   if (req.method === "POST" && url.pathname === "/api/students/import") {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
@@ -2431,7 +2670,7 @@ async function handleApi(req, res, url) {
 
     let nextStudents = normalized;
     if (mode === "append") {
-      const existing = getUserStudents(user.id);
+      const existing = await getUserStudents(user.id);
       const byId = new Map(existing.map((student) => [student.student_id, student]));
       normalized.forEach((student) => {
         byId.set(student.student_id, student);
@@ -2439,7 +2678,7 @@ async function handleApi(req, res, url) {
       nextStudents = [...byId.values()];
     }
 
-    setUserStudents(user.id, nextStudents);
+    await setUserStudents(user.id, nextStudents);
     json(res, 200, {
       ok: true,
       count: normalized.length,
@@ -2453,14 +2692,14 @@ async function handleApi(req, res, url) {
 
   const studentMatch = req.method === "PATCH" && url.pathname.match(/^\/api\/students\/([^/]+)$/);
   if (studentMatch) {
-    const user = requireUser(req, res);
+    const user = await requireUser(req, res);
     if (!user) {
       return;
     }
 
     const studentId = decodeURIComponent(studentMatch[1]);
     const body = await readBody(req);
-    const students = getUserStudents(user.id);
+    const students = await getUserStudents(user.id);
     const index = students.findIndex((student) => student.student_id === studentId);
 
     if (index === -1) {
@@ -2476,7 +2715,7 @@ async function handleApi(req, res, url) {
     });
 
     students[index] = nextStudent;
-    setUserStudents(user.id, students);
+    await setUserStudents(user.id, students);
     json(res, 200, { ok: true, student: nextStudent });
     return;
   }
