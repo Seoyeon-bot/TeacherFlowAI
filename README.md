@@ -16,6 +16,8 @@ Instead of giving only a short lesson summary, the app is designed to generate m
 
 It also includes a student support dashboard so a teacher can organize class data, review student needs, and prepare communication and intervention follow-up.
 
+## How to use 
+visit https://69e8d12a3b684048dea562d6--teacherflowai.netlify.app
 ## Why This App Exists
 
 A lot of teacher planning tools stop too early. They summarize a topic, but they still leave the teacher doing the real work:
