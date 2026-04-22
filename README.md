@@ -1,84 +1,163 @@
 # TeacherFlowAI
 
-TeacherFlowAI is a challenge-ready teacher workflow product demo rebuilt around five core modules:
+TeacherFlowAI is a teacher workflow app that helps teachers turn one lesson idea into a fuller classroom-ready package.
 
-- One-Click Teaching Pack
-- Auto-Repurpose Builder
-- Student Support Dashboard
-- Class Summary Intelligence
-- Observation/Admin-Ready Version
+Instead of giving only a short lesson summary, the app is designed to generate materials teachers can actually use:
 
-The app uses explainable support scoring, fixed-schema student imports, backend account auth, and per-teacher roster storage so it behaves more like software a school could actually buy.
+- lesson slides
+- warm-ups
+- guided practice
+- independent work
+- homework
+- exit tickets
+- answer keys
+- substitute-friendly lesson materials
+- repurposed assessments and parallel versions
 
-## Current Workspace
+It also includes a student support dashboard so a teacher can organize class data, review student needs, and prepare communication and intervention follow-up.
 
-Project path:
+## Why This App Exists
 
-```text
-/Users/seoyeonchoi/Desktop/LFA_Work/TeacherFlowAI
-```
+A lot of teacher planning tools stop too early. They summarize a topic, but they still leave the teacher doing the real work:
 
-## What It Includes
+- building slides
+- writing student questions
+- preparing homework
+- adjusting for a substitute
+- making alternate assessment versions
 
-- work email sign-in, create account, sign-out, and reset-link email flow
-- hashed local passwords with PBKDF2
-- Google OAuth scaffolding for Workspace login
-- backend session cookies
-- per-teacher roster persistence in `data/students.json`
-- class-by-class roster management with advisor and parent email editing
-- Gmail compose handoff for advisor/parent drafts
-- Google Calendar reminder handoff for intervention follow-up
-- polished multi-module UI optimized for the Codex Creator Challenge
+TeacherFlowAI is meant to reduce that extra workload. The goal is to help a teacher move faster from idea to presentation-ready lesson materials.
 
-## Student Import Schema
+## What TeacherFlowAI Does
 
-TeacherFlowAI expects this fixed schema for roster import:
+TeacherFlowAI is organized around five main workflows:
 
-```text
-student_id,student_name,grade_level,class_name,attendance_percent,missing_assignments,late_submissions,participation_score,behavior_concern,recent_quiz_avg,recent_test_avg,score_trend,last_intervention_days_ago,teacher_notes,advisor_email,parent_email
-```
+1. One-Click Teaching Pack  
+   Builds a fuller lesson package from a topic, objective, class period, and lesson settings.
 
-Supported import paths:
+2. Auto-Repurpose Builder  
+   Takes an existing file or lesson and repurposes it into another classroom format.
 
-- upload `.csv`
-- upload `.tsv`
-- paste CSV
-- paste TSV
+3. Assessment Version Builder  
+   Creates typed quizzes and parallel assessments with different versions instead of duplicate copies.
 
-The app includes a sample CSV download. Start from that template instead of inventing custom column names.
+4. Student Support Dashboard  
+   Helps teachers upload student data, review support levels, and generate follow-up actions.
 
-## Explainable Support Scoring
+5. Observation/Admin-Ready Version  
+   Organizes lesson outputs in a clearer format that is easier to present and review.
 
-TeacherFlowAI does not use a black-box student risk model. It computes a weighted score from:
+## Main Benefits
+
+- Saves planning time by generating more of the actual student-facing materials.
+- Helps teachers stay organized by grouping outputs into clear lesson parts.
+- Supports substitute coverage with shorter, clearer materials.
+- Makes assessments more usable by producing different versions.
+- Gives a teacher a starting point they can revise instead of forcing them to start from scratch.
+- Works as a web app and has iPhone/Android wrapper support through Capacitor.
+
+## How It Works
+
+At a high level, the app works like this:
+
+1. The teacher enters a topic, objective, time, and lesson needs.
+2. The app organizes that input into a fuller classroom structure.
+3. It generates lesson components such as:
+   - warm-up
+   - mini-lesson
+   - guided practice
+   - independent practice
+   - homework
+   - exit ticket
+4. If the user is creating a substitute plan, it also restructures what the sub needs to know into a shorter, clearer brief.
+5. If the user is building assessments, the app creates parallel versions with changed stems, values, and contexts instead of repeating the same question set.
+6. The results are grouped into materials that are easier for a teacher to present and adjust.
+
+## Teacher Experience
+
+The app is meant to feel more interactive than a one-shot generator.
+
+Instead of only returning plain text, the current setup focuses more on:
+
+- lesson slides that contain student-facing prompts
+- clearer pacing by class period
+- practice and challenge flow
+- video suggestions based on teacher keywords
+- materials a teacher can revise after generation
+
+## Student-Facing Materials
+
+TeacherFlowAI is built to produce materials students can actually use during class, not just planning notes for the teacher.
+
+Examples include:
+
+- warm-up prompts
+- guided practice questions
+- independent work
+- homework/classwork tasks
+- exit tickets
+- answer keys
+- lesson slides with actual prompt content
+
+## Substitute Plan Support
+
+The substitute workflow is designed to be simpler and more usable.
+
+Instead of dumping teacher notes directly onto the page, it aims to:
+
+- shorten the substitute brief
+- organize directions clearly
+- include lesson materials in the slide flow
+- include video suggestions when relevant
+- prepare work students can complete even if the regular teacher is absent
+
+## Assessment Version Builder
+
+The assessment workflow supports:
+
+- typed quizzes
+- parallel assessments
+- alternate versions
+
+The versioning logic was updated so Version A and Version B do not simply repeat the same 12 questions. The goal is to preserve skill alignment while changing wording, surface context, and numbers where appropriate.
+
+## Student Support Dashboard
+
+TeacherFlowAI also includes a student support workflow. It uses an explainable support score rather than a black-box model.
+
+The support score is based on classroom and performance indicators such as:
 
 - attendance
 - missing assignments
 - late submissions
-- participation score
+- participation
 - behavior concern
 - recent quiz average
 - recent test average
 - score trend
-- intervention gap
+- days since intervention
 
-Support levels:
+The dashboard then helps surface likely support level and follow-up ideas.
 
-- `0-34`: Low
-- `35-64`: Moderate
-- `65-100`: High
+## Tech Overview
 
-The dashboard shows the top 2-3 strongest contributing reasons for each flagged student, then generates:
+This project is a lightweight web app with a Node server backend.
 
-- suggested intervention
-- draft advisor/parent email
-- progress summary
+Main pieces:
+
+- `index.html`, `planning.html`, `support.html`, `insights.html`, `settings.html`: frontend pages
+- `styles.css`: styling and responsive layout
+- `app.js`: frontend logic and lesson/material generation behavior
+- `server.js`: local auth, session handling, API routes, storage, and backend logic
+- `data/`: local storage for users and student records
+- `capacitor.config.json`: iPhone/Android wrapper config
+- `render.yaml`: Render deployment blueprint
 
 ## Local Run
 
-From this directory:
+From the project folder:
 
 ```bash
-cd /Users/seoyeonchoi/Desktop/LFA_Work/TeacherFlowAI
 cp .env.example .env
 node server.js
 ```
@@ -89,128 +168,132 @@ Then open:
 http://localhost:3000
 ```
 
-## Production Deploy
+## Environment Variables
 
-TeacherFlowAI needs a live backend URL before the iPhone and Android wrappers will work correctly.
+Important values:
 
-Minimum production requirements:
+- `PORT`
+- `SESSION_SECRET`
+- `APP_BASE_URL`
+- `GOOGLE_REDIRECT_URI`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `MAIL_FROM`
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
 
-- HTTPS domain for the Node server
-- persistent writable storage for `data/`
-- environment variables set in production
+For local work, `.env.example` gives a starting template.
 
-Recommended production env changes:
+## Data Storage
 
-- `APP_BASE_URL=https://your-live-domain.com`
-- `GOOGLE_REDIRECT_URI=https://your-live-domain.com/api/auth/google/callback`
-- `SESSION_SECRET=` strong random value
+This app writes local data into the `data/` folder, including:
 
-Health check:
+- `data/users.json`
+- `data/students.json`
+- `data/activities.json`
+
+Because of that, production hosting must support persistent storage.
+
+## Deploying the App
+
+This project is set up for Render deployment.
+
+The repo includes [render.yaml](/Users/seoyeonchoi/Desktop/LFA_Work/TeacherFlowAI/render.yaml:1), which configures:
+
+- Docker deployment
+- health check at `/healthz`
+- persistent disk mounted at `/app/data`
+- production environment structure
+
+### Render Steps
+
+1. Push the repo to GitHub.
+2. Create a new `Blueprint` service in Render.
+3. Select this repository.
+4. Let Render create the service using `render.yaml`.
+5. Set the required environment variables:
+   - `APP_BASE_URL=https://your-service-name.onrender.com`
+   - `GOOGLE_REDIRECT_URI=https://your-service-name.onrender.com/api/auth/google/callback`
+6. Add optional email and Google OAuth settings if you want those features enabled.
+7. Deploy.
+8. Test the health endpoint:
 
 ```text
-GET /healthz
+https://your-service-name.onrender.com/healthz
 ```
 
-### Docker Deploy
+## iPhone and Android App Packaging
 
-Build:
+This repo also includes Capacitor setup so the web app can be wrapped for mobile:
 
-```bash
-docker build -t teacherflowai .
-```
+- `ios/`
+- `android/`
+- `capacitor.config.json`
+- `mobile-shell/`
+- `manifest.webmanifest`
 
-Run:
+Important: the phone app depends on the live backend. It is not a fully offline standalone app.
 
-```bash
-docker run --env-file .env -p 3000:3000 teacherflowai
-```
+That means before mobile publishing, you must:
 
-After deployment, update `capacitor.config.json` with your real live URL, then run:
+1. deploy the backend to a live HTTPS URL
+2. replace the placeholder URL in `capacitor.config.json`
+3. run:
 
 ```bash
 npm run mobile:sync
 ```
 
-### Render Deploy
+4. open the native projects:
 
-This repo now includes [render.yaml](/Users/seoyeonchoi/Desktop/LFA_Work/TeacherFlowAI/render.yaml:1), so Render can create the web service with the right basics:
+```bash
+npm run mobile:open:ios
+npm run mobile:open:android
+```
 
-- Docker runtime
-- `/healthz` health check
-- persistent disk mounted at `/app/data`
-- generated `SESSION_SECRET`
+## App Store / Play Store Reality
 
-Recommended Render flow:
+This repo is prepared for mobile packaging, but actual store publishing still requires:
 
-1. Push this project to GitHub.
-2. In Render, create a new Blueprint and select that repo.
-3. Review the generated service and keep the disk mount at `/app/data`.
-4. Fill in these required env vars in Render before first production use:
-   - `APP_BASE_URL=https://your-service-name.onrender.com`
-   - `GOOGLE_REDIRECT_URI=https://your-service-name.onrender.com/api/auth/google/callback`
-5. Fill in these optional env vars if you want email reset and Google login:
-   - `MAIL_FROM`
-   - `SMTP_HOST`
-   - `SMTP_PORT`
-   - `SMTP_SECURE`
-   - `SMTP_USER`
-   - `SMTP_PASS`
-   - `GOOGLE_CLIENT_ID`
-   - `GOOGLE_CLIENT_SECRET`
-6. Deploy and confirm `https://your-service-name.onrender.com/healthz` responds successfully.
-7. Replace the placeholder URL in `capacitor.config.json`.
-8. Run `npm run mobile:sync`.
+- a real deployed backend URL
+- Apple Developer account
+- Google Play Developer account
+- real device testing
+- app screenshots
+- app icon and branding review
+- store listing copy
+- privacy disclosures and permissions review
 
-## Google OAuth Setup
+## Current Strengths
 
-If you want Google Workspace sign-in to work, fill these values in `.env`:
+- richer lesson generation than a plain summary
+- substitute planning support
+- assessment version generation
+- explainable student support workflow
+- responsive design improvements for phones and medium-size screens
+- deployment path prepared for Render
+- native app wrappers prepared for iPhone and Android
 
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_CLIENT_SECRET`
-- `GOOGLE_REDIRECT_URI`
-- `SESSION_SECRET`
+## Current Limitations
 
-Without Google credentials, local work-email account creation and password auth still work.
+- final lesson quality still depends on how specific the teacher input is
+- the mobile app still depends on the deployed web backend
+- store submission work is not finished until live deployment and device testing are complete
+- local file-based storage is simple and useful for early deployment, but a future production version may want a real database
 
-`server.js` now loads `.env` automatically at startup, so a normal `node server.js` run is enough.
+## Sample Use Cases
 
-## Password Reset Email
+- A teacher needs a fast teaching pack for tomorrow’s lesson.
+- A substitute needs a clear set of lesson materials and student tasks.
+- A teacher wants Version A and Version B of the same quiz.
+- A teacher wants to upload student data and identify students who may need support.
+- A teacher wants a web app that can later be packaged for phones.
 
-TeacherFlowAI now sends reset links by email.
+## Project Goal
 
-Recommended `.env` mail settings for Google Workspace or Gmail SMTP:
+The core goal of TeacherFlowAI is simple:
 
-- `SMTP_HOST=smtp.gmail.com`
-- `SMTP_PORT=587`
-- `SMTP_SECURE=false`
-- `SMTP_USER=your-work-email@school.org`
-- `SMTP_PASS=your-app-password-or-smtp-password`
-- `MAIL_FROM=your-work-email@school.org`
-
-Flow:
-
-1. Open the `Reset Password` tab.
-2. Enter the work email.
-3. Submit the request.
-4. Open the emailed reset link.
-5. Choose a new password.
-
-The reset token is still stored hashed on the backend and expires automatically.
-
-You can also save SMTP settings from `Settings` → `Email Provider` in the app, then use `Send Test Email` before relying on password reset mail.
-
-## Data Storage
-
-- `data/users.json`: user accounts, hashed passwords, reset metadata
-- `data/students.json`: roster data keyed by teacher account
-
-## Main Files
-
-- `index.html`: app shell and module layout
-- `styles.css`: product UI styling
-- `app.js`: frontend behavior, scoring, and module rendering
-- `server.js`: auth, password reset, sessions, and roster APIs
-- `.env.example`: local config template
-- `render.yaml`: Render deployment blueprint with persistent disk
-- `capacitor.config.json`: iPhone / Android wrapper config
-- `MOBILE_APP_SETUP.md`: mobile packaging notes
+Help teachers spend less time formatting and rebuilding materials, and more time teaching.
