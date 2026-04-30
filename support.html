@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#1f7a5a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -16,6 +16,20 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;600&display=swap"
       rel="stylesheet"
     />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]],
+          displayMath: [["\\[", "\\]"], ["$$", "$$"]],
+        },
+        startup: {
+          typeset: false,
+        },
+      };
+      window.TEACHERFLOW_DESMOS_KEY = window.TEACHERFLOW_DESMOS_KEY || "dcb31709b452b1cf9dc26972add0fda6";
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script defer src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body data-page="support">
@@ -43,10 +57,31 @@
           </div>
           <p class="hero-text compact-copy">Pick a student, see the risk summary, then draft outreach or set a reminder without digging through the page.</p>
         </div>
+        <div class="support-hero-strip">
+          <article class="support-hero-card support-tone-alert">
+            <span class="metric-label">High Priority</span>
+            <h3>Catch who needs action this week</h3>
+            <p>Attendance, missing work, test drops, and intervention gaps stay visible immediately.</p>
+          </article>
+          <article class="support-hero-card support-tone-contact">
+            <span class="metric-label">Teacher Action</span>
+            <h3>Draft outreach and reminders quickly</h3>
+            <p>Move from student need to email draft or follow-up reminder without leaving the workspace.</p>
+          </article>
+          <article class="support-hero-card support-tone-track">
+            <span class="metric-label">Explainable Scoring</span>
+            <h3>Show the reason, not just the label</h3>
+            <p>Each student view ties support level back to visible teacher-facing data points.</p>
+          </article>
+        </div>
       </header>
 
       <main>
-        <section class="panel workspace-command">
+        <section class="panel workspace-command support-command-bar">
+          <div class="support-command-copy">
+            <p class="eyebrow">Support Flow</p>
+            <h3>Search, triage, then act.</h3>
+          </div>
           <div class="command-grid">
             <label class="compact-field">Search Students<input id="student-search" type="search" placeholder="Search student, class, notes, or advisor email" /></label>
             <label class="compact-field">
@@ -85,22 +120,22 @@
             <h3>Student Support Workspace</h3>
             <p>Lists on the left. One clear action panel on the right.</p>
           </div>
-          <div class="support-workspace">
+          <div class="support-workspace support-workspace-shell">
             <aside class="support-lists">
-              <section class="support-column">
+              <section class="support-column support-column-high">
                 <div class="support-column-head"><h4>High Support</h4><span id="high-list-count" class="queue-badge">0</span></div>
                 <div id="high-support-list" class="student-list"></div>
               </section>
-              <section class="support-column">
+              <section class="support-column support-column-moderate">
                 <div class="support-column-head"><h4>Moderate Support</h4><span id="moderate-list-count" class="queue-badge">0</span></div>
                 <div id="moderate-support-list" class="student-list"></div>
               </section>
-              <section class="support-column">
+              <section class="support-column support-column-low">
                 <div class="support-column-head"><h4>Low Support</h4><span id="low-list-count" class="queue-badge">0</span></div>
                 <div id="low-support-list" class="student-list"></div>
               </section>
             </aside>
-            <section id="student-detail" class="student-detail-panel"></section>
+            <section id="student-detail" class="student-detail-panel support-detail-shell"></section>
           </div>
         </section>
 

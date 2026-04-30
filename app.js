@@ -15,7 +15,7 @@ const REQUIRED_HEADERS = [
   "teacher_notes",
 ];
 
-const OPTIONAL_HEADERS = ["advisor_email", "parent_email"];
+const OPTIONAL_HEADERS = ["advisor_email", "parent_email", "topic_history"];
 
 const SAMPLE_HEADERS = [...REQUIRED_HEADERS, ...OPTIONAL_HEADERS];
 
@@ -26,43 +26,55 @@ S-1003,Sofia Ramirez,9,Biology,88,2,3,3,medium,79,76,down,29,"Attendance gaps ar
 
 const sampleStudents = [
   {
-    student_id: "S-1001",
+    student_id: "D-1001",
     student_name: "Mina Patel",
     grade_level: "10",
     class_name: "Algebra II",
-    attendance_percent: 91,
-    missing_assignments: 3,
-    late_submissions: 2,
+    attendance_percent: 84,
+    missing_assignments: 5,
+    late_submissions: 4,
     participation_score: 2,
     behavior_concern: "medium",
-    recent_quiz_avg: 74,
-    recent_test_avg: 69,
+    recent_quiz_avg: 68,
+    recent_test_avg: 64,
     score_trend: "down",
-    last_intervention_days_ago: 34,
-    teacher_notes: "Missed the last checkpoint and has been quiet during partner practice.",
+    last_intervention_days_ago: 41,
+    teacher_notes: "Needs a tighter reteach plan and quick family contact before the next checkpoint.",
     advisor_email: "advisor.mina@school.org",
     parent_email: "family.mina@example.com",
+    topic_history: [
+      { topic: "Linear Equations", score: 72, assessed_on: "2026-03-28", type: "quiz" },
+      { topic: "Exponents", score: 61, assessed_on: "2026-04-04", type: "quiz" },
+      { topic: "Factoring", score: 67, assessed_on: "2026-04-11", type: "classwork" },
+      { topic: "Quadratics", score: 64, assessed_on: "2026-04-18", type: "test" },
+    ],
   },
   {
-    student_id: "S-1002",
+    student_id: "D-1002",
     student_name: "Jordan Lee",
     grade_level: "11",
     class_name: "AP Computer Science",
-    attendance_percent: 97,
-    missing_assignments: 1,
+    attendance_percent: 98,
+    missing_assignments: 0,
     late_submissions: 1,
     participation_score: 4,
     behavior_concern: "low",
-    recent_quiz_avg: 88,
-    recent_test_avg: 84,
-    score_trend: "flat",
-    last_intervention_days_ago: 12,
-    teacher_notes: "Strong verbal reasoning but written explanations stay rushed.",
+    recent_quiz_avg: 92,
+    recent_test_avg: 90,
+    score_trend: "up",
+    last_intervention_days_ago: 7,
+    teacher_notes: "Doing well. Good candidate for extension challenges.",
     advisor_email: "advisor.jordan@school.org",
     parent_email: "",
+    topic_history: [
+      { topic: "For Loops", score: 95, assessed_on: "2026-03-28", type: "quiz" },
+      { topic: "Iteration", score: 91, assessed_on: "2026-04-04", type: "quiz" },
+      { topic: "Nested Loops", score: 88, assessed_on: "2026-04-11", type: "classwork" },
+      { topic: "Debugging", score: 93, assessed_on: "2026-04-18", type: "test" },
+    ],
   },
   {
-    student_id: "S-1003",
+    student_id: "D-1003",
     student_name: "Sofia Ramirez",
     grade_level: "9",
     class_name: "Biology",
@@ -71,13 +83,235 @@ const sampleStudents = [
     late_submissions: 3,
     participation_score: 3,
     behavior_concern: "medium",
-    recent_quiz_avg: 79,
-    recent_test_avg: 76,
+    recent_quiz_avg: 77,
+    recent_test_avg: 74,
     score_trend: "down",
     last_intervention_days_ago: 29,
-    teacher_notes: "Attendance gaps are slowing lab confidence and follow-through.",
+    teacher_notes: "Confidence drops during lab write-ups. Needs guided writing supports.",
     advisor_email: "advisor.sofia@school.org",
     parent_email: "family.sofia@example.com",
+    topic_history: [
+      { topic: "Cells", score: 82, assessed_on: "2026-03-28", type: "quiz" },
+      { topic: "Photosynthesis", score: 76, assessed_on: "2026-04-04", type: "quiz" },
+      { topic: "Respiration", score: 73, assessed_on: "2026-04-11", type: "classwork" },
+      { topic: "Lab Analysis", score: 71, assessed_on: "2026-04-18", type: "test" },
+    ],
+  },
+  {
+    student_id: "D-1004",
+    student_name: "Elijah Brooks",
+    grade_level: "10",
+    class_name: "Geometry",
+    attendance_percent: 79,
+    missing_assignments: 6,
+    late_submissions: 5,
+    participation_score: 2,
+    behavior_concern: "high",
+    recent_quiz_avg: 61,
+    recent_test_avg: 58,
+    score_trend: "down",
+    last_intervention_days_ago: 53,
+    teacher_notes: "Urgent intervention candidate. Missing work and assessment gaps are stacking.",
+    advisor_email: "advisor.elijah@school.org",
+    parent_email: "family.elijah@example.com",
+    topic_history: [
+      { topic: "Angles", score: 66, assessed_on: "2026-03-28", type: "quiz" },
+      { topic: "Triangles", score: 58, assessed_on: "2026-04-04", type: "quiz" },
+      { topic: "Similarity", score: 60, assessed_on: "2026-04-11", type: "classwork" },
+      { topic: "Proofs", score: 55, assessed_on: "2026-04-18", type: "test" },
+    ],
+  },
+  {
+    student_id: "D-1005",
+    student_name: "Ava Chen",
+    grade_level: "11",
+    class_name: "AP English",
+    attendance_percent: 95,
+    missing_assignments: 1,
+    late_submissions: 0,
+    participation_score: 5,
+    behavior_concern: "low",
+    recent_quiz_avg: 94,
+    recent_test_avg: 91,
+    score_trend: "flat",
+    last_intervention_days_ago: 10,
+    teacher_notes: "Consistent. Can lead peer discussion groups.",
+    advisor_email: "advisor.ava@school.org",
+    parent_email: "",
+    topic_history: [
+      { topic: "Theme", score: 92, assessed_on: "2026-03-28", type: "quiz" },
+      { topic: "Evidence", score: 94, assessed_on: "2026-04-04", type: "quiz" },
+      { topic: "Rhetoric", score: 91, assessed_on: "2026-04-11", type: "classwork" },
+      { topic: "Timed Writing", score: 93, assessed_on: "2026-04-18", type: "test" },
+    ],
+  },
+  {
+    student_id: "D-1006",
+    student_name: "Noah Williams",
+    grade_level: "9",
+    class_name: "World History",
+    attendance_percent: 86,
+    missing_assignments: 3,
+    late_submissions: 2,
+    participation_score: 3,
+    behavior_concern: "medium",
+    recent_quiz_avg: 72,
+    recent_test_avg: 70,
+    score_trend: "flat",
+    last_intervention_days_ago: 24,
+    teacher_notes: "Needs shorter chunked reading tasks and clearer note supports.",
+    advisor_email: "advisor.noah@school.org",
+    parent_email: "family.noah@example.com",
+    topic_history: [
+      { topic: "Primary Sources", score: 74, assessed_on: "2026-03-28", type: "quiz" },
+      { topic: "Cause and Effect", score: 71, assessed_on: "2026-04-04", type: "quiz" },
+      { topic: "Short Response", score: 69, assessed_on: "2026-04-11", type: "classwork" },
+      { topic: "Vocabulary", score: 73, assessed_on: "2026-04-18", type: "test" },
+    ],
+  },
+  {
+    student_id: "D-1007",
+    student_name: "Isabella Nguyen",
+    grade_level: "12",
+    class_name: "Precalculus",
+    attendance_percent: 93,
+    missing_assignments: 2,
+    late_submissions: 2,
+    participation_score: 4,
+    behavior_concern: "low",
+    recent_quiz_avg: 81,
+    recent_test_avg: 78,
+    score_trend: "flat",
+    last_intervention_days_ago: 18,
+    teacher_notes: "Borderline moderate support. Watch for test anxiety before the next unit check.",
+    advisor_email: "advisor.isabella@school.org",
+    parent_email: "",
+    topic_history: [
+      { topic: "Functions", score: 84, assessed_on: "2026-03-28", type: "quiz" },
+      { topic: "Polynomials", score: 79, assessed_on: "2026-04-04", type: "quiz" },
+      { topic: "Trigonometry", score: 77, assessed_on: "2026-04-11", type: "classwork" },
+      { topic: "Modeling", score: 81, assessed_on: "2026-04-18", type: "test" },
+    ],
+  },
+  {
+    student_id: "D-1008",
+    student_name: "Lucas Garcia",
+    grade_level: "10",
+    class_name: "Chemistry",
+    attendance_percent: 90,
+    missing_assignments: 4,
+    late_submissions: 1,
+    participation_score: 2,
+    behavior_concern: "medium",
+    recent_quiz_avg: 69,
+    recent_test_avg: 71,
+    score_trend: "down",
+    last_intervention_days_ago: 36,
+    teacher_notes: "Needs a small-group reteach on balancing and practice tracking.",
+    advisor_email: "advisor.lucas@school.org",
+    parent_email: "family.lucas@example.com",
+    topic_history: [
+      { topic: "Atoms", score: 73, assessed_on: "2026-03-28", type: "quiz" },
+      { topic: "Moles", score: 66, assessed_on: "2026-04-04", type: "quiz" },
+      { topic: "Balancing", score: 69, assessed_on: "2026-04-11", type: "classwork" },
+      { topic: "Lab Safety", score: 75, assessed_on: "2026-04-18", type: "test" },
+    ],
+  },
+  {
+    student_id: "D-1009",
+    student_name: "Emma Johnson",
+    grade_level: "11",
+    class_name: "US History",
+    attendance_percent: 97,
+    missing_assignments: 0,
+    late_submissions: 0,
+    participation_score: 5,
+    behavior_concern: "low",
+    recent_quiz_avg: 89,
+    recent_test_avg: 93,
+    score_trend: "up",
+    last_intervention_days_ago: 8,
+    teacher_notes: "Strong and steady. Good example of on-track performance.",
+    advisor_email: "advisor.emma@school.org",
+    parent_email: "",
+    topic_history: [
+      { topic: "Document Analysis", score: 87, assessed_on: "2026-03-28", type: "quiz" },
+      { topic: "Reconstruction", score: 90, assessed_on: "2026-04-04", type: "quiz" },
+      { topic: "Argument Writing", score: 92, assessed_on: "2026-04-11", type: "classwork" },
+      { topic: "Civics Review", score: 94, assessed_on: "2026-04-18", type: "test" },
+    ],
+  },
+  {
+    student_id: "D-1010",
+    student_name: "Mason Turner",
+    grade_level: "9",
+    class_name: "Earth Science",
+    attendance_percent: 82,
+    missing_assignments: 5,
+    late_submissions: 4,
+    participation_score: 2,
+    behavior_concern: "high",
+    recent_quiz_avg: 63,
+    recent_test_avg: 60,
+    score_trend: "down",
+    last_intervention_days_ago: 47,
+    teacher_notes: "Another high-priority student for outreach and weekly progress monitoring.",
+    advisor_email: "advisor.mason@school.org",
+    parent_email: "family.mason@example.com",
+    topic_history: [
+      { topic: "Rocks", score: 68, assessed_on: "2026-03-28", type: "quiz" },
+      { topic: "Weathering", score: 59, assessed_on: "2026-04-04", type: "quiz" },
+      { topic: "Plate Boundaries", score: 61, assessed_on: "2026-04-11", type: "classwork" },
+      { topic: "Earth Systems", score: 58, assessed_on: "2026-04-18", type: "test" },
+    ],
+  },
+  {
+    student_id: "D-1011",
+    student_name: "Grace Kim",
+    grade_level: "12",
+    class_name: "AP Statistics",
+    attendance_percent: 94,
+    missing_assignments: 1,
+    late_submissions: 1,
+    participation_score: 4,
+    behavior_concern: "low",
+    recent_quiz_avg: 85,
+    recent_test_avg: 82,
+    score_trend: "flat",
+    last_intervention_days_ago: 14,
+    teacher_notes: "Near proficiency. Good target for a quick misconception conference.",
+    advisor_email: "advisor.grace@school.org",
+    parent_email: "",
+    topic_history: [
+      { topic: "Sampling", score: 86, assessed_on: "2026-03-28", type: "quiz" },
+      { topic: "Probability", score: 83, assessed_on: "2026-04-04", type: "quiz" },
+      { topic: "Distributions", score: 81, assessed_on: "2026-04-11", type: "classwork" },
+      { topic: "Inference", score: 84, assessed_on: "2026-04-18", type: "test" },
+    ],
+  },
+  {
+    student_id: "D-1012",
+    student_name: "Daniel Rivera",
+    grade_level: "10",
+    class_name: "Spanish II",
+    attendance_percent: 89,
+    missing_assignments: 2,
+    late_submissions: 3,
+    participation_score: 3,
+    behavior_concern: "medium",
+    recent_quiz_avg: 76,
+    recent_test_avg: 73,
+    score_trend: "flat",
+    last_intervention_days_ago: 21,
+    teacher_notes: "Moderate support. Needs structured speaking practice and vocabulary review.",
+    advisor_email: "advisor.daniel@school.org",
+    parent_email: "family.daniel@example.com",
+    topic_history: [
+      { topic: "Vocabulary", score: 79, assessed_on: "2026-03-28", type: "quiz" },
+      { topic: "Speaking", score: 71, assessed_on: "2026-04-04", type: "quiz" },
+      { topic: "Listening", score: 74, assessed_on: "2026-04-11", type: "classwork" },
+      { topic: "Writing", score: 72, assessed_on: "2026-04-18", type: "test" },
+    ],
   },
 ];
 
@@ -91,10 +325,24 @@ const resetRequestForm = document.querySelector("#reset-request-form");
 const resetConfirmForm = document.querySelector("#reset-confirm-form");
 const googleSignInButton = document.querySelector("#google-sign-in-button");
 const googleCreateButton = document.querySelector("#google-create-button");
+const tryDemoButton = document.querySelector("#try-demo-button");
+const tryDemoInlineButton = document.querySelector("#try-demo-inline-button");
+const heroDemoButton = document.querySelector("#hero-demo-button");
 const authStatus = document.querySelector("#auth-status");
 
 const teacherIdentity = document.querySelector("#teacher-identity");
 const signOutButton = document.querySelector("#sign-out-button");
+const demoPrevButton = document.querySelector("#demo-prev-button");
+const demoPlayButton = document.querySelector("#demo-play-button");
+const demoNextButton = document.querySelector("#demo-next-button");
+const demoScreenKicker = document.querySelector("#demo-screen-kicker");
+const demoScreenModule = document.querySelector("#demo-screen-module");
+const demoScreenTitle = document.querySelector("#demo-screen-title");
+const demoScreenCopy = document.querySelector("#demo-screen-copy");
+const demoScreenHighlights = document.querySelector("#demo-screen-highlights");
+const demoProgressDots = document.querySelector("#demo-progress-dots");
+const demoScriptTitle = document.querySelector("#demo-script-title");
+const demoScriptCopy = document.querySelector("#demo-script-copy");
 const studentCount = document.querySelector("#student-count");
 const highPriorityCount = document.querySelector("#high-priority-count");
 const prepHoursSaved = document.querySelector("#prep-hours-saved");
@@ -127,6 +375,21 @@ const lowListCount = document.querySelector("#low-list-count");
 const studentDetail = document.querySelector("#student-detail");
 const classIntelSelect = document.querySelector("#class-intel-select");
 const classIntelOutput = document.querySelector("#class-intel-output");
+const insightStudentCount = document.querySelector("#insight-student-count");
+const insightClassAverage = document.querySelector("#insight-class-average");
+const insightWeakTopicCount = document.querySelector("#insight-weak-topic-count");
+const insightPredictionAverage = document.querySelector("#insight-prediction-average");
+const insightStudentSelect = document.querySelector("#insight-student-select");
+const insightStudentAverageValue = document.querySelector("#insight-student-average-value");
+const insightStudentScoreList = document.querySelector("#insight-student-score-list");
+const insightStudentNotes = document.querySelector("#insight-student-notes");
+const insightSaveNotesButton = document.querySelector("#insight-save-notes-button");
+const insightNotesStatus = document.querySelector("#insight-notes-status");
+const insightClassAverageTable = document.querySelector("#insight-class-average-table");
+const insightAlertList = document.querySelector("#insight-alert-list");
+const insightRecommendationList = document.querySelector("#insight-recommendation-list");
+const insightStudentChartCanvas = document.querySelector("#insight-student-chart");
+const insightClassChartCanvas = document.querySelector("#insight-class-chart");
 const adminReadyForm = document.querySelector("#admin-ready-form");
 const adminReadyOutput = document.querySelector("#admin-ready-output");
 const downloadSample = document.querySelector("#download-sample");
@@ -184,6 +447,18 @@ let sessionReady = false;
 let selectedInsightsClass = "";
 let selectedRosterClass = "";
 let currentEmailSettings = null;
+let activeDemoSceneIndex = 0;
+let demoAutoplay = true;
+let demoSceneTimer = null;
+let editableAssessmentState = null;
+let editableAssessmentPayload = null;
+let pendingAssessmentScrollTarget = "";
+let activeAssessmentPreviewIndex = 0;
+let activeAssessmentEditorPath = "";
+let insightStudentChart = null;
+let insightClassChart = null;
+const TEACHERFLOW_SNAPSHOT_KEY = "teacherflowai_students_snapshot";
+const TEACHERFLOW_NOTES_KEY = "teacherflowai_student_notes";
 const state = {
   search: "",
   filter: "all",
@@ -229,6 +504,49 @@ const DEFAULT_EMAIL_PROVIDER = {
   hasPassword: false,
 };
 
+const demoScenes = [
+  {
+    kicker: "Step 1",
+    module: "Demo Access",
+    title: "Open the product instantly",
+    copy: "Teachers can start with Try Demo instead of account creation. The goal is immediate access to a working teacher workspace.",
+    highlights: ["No signup required", "Seeded teacher profile", "Ready to explore"],
+    script: "Click Try Demo so the app opens as a working teacher account instead of asking for setup first.",
+  },
+  {
+    kicker: "Step 2",
+    module: "Planning",
+    title: "Generate a Python for-loops teaching pack",
+    copy: "Show one polished flow with slides, guided practice, independent work, homework, and exit ticket.",
+    highlights: ["Slides ready", "Guided practice", "Homework + exit ticket"],
+    script: "Enter a strong topic like Python for loops and generate the teaching pack to show full lesson output quality.",
+  },
+  {
+    kicker: "Step 3",
+    module: "Assessment",
+    title: "Create Version A and Version B",
+    copy: "Demonstrate that the assessment builder creates parallel versions instead of duplicate questions.",
+    highlights: ["Parallel forms", "Changed contexts", "Teacher key included"],
+    script: "Open the assessment builder and point out that Version A and Version B are visibly different while keeping the same skill target.",
+  },
+  {
+    kicker: "Step 4",
+    module: "Student Support",
+    title: "Open the support dashboard with real-looking students",
+    copy: "The demo workspace is preloaded with mixed-risk students so the dashboard looks believable immediately.",
+    highlights: ["12 students seeded", "High / moderate / low mix", "Intervention queue"],
+    script: "Switch to Student Support and show the believable classroom data, support levels, and intervention queue.",
+  },
+  {
+    kicker: "Step 5",
+    module: "Teacher Value",
+    title: "Close on saved teacher time",
+    copy: "Tie the workflow back to teacher time savings: one input becomes lessons, slides, assessments, and support actions.",
+    highlights: ["One topic -> many materials", "Sub plans included", "Teacher-ready flow"],
+    script: "End by restating the core value: less teacher formatting, more usable classroom materials, and clearer support actions.",
+  },
+];
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -236,6 +554,84 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+const MATHJAX_CDN_URL = "https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js";
+const DESMOS_EMBED_API_KEY = window.TEACHERFLOW_DESMOS_KEY || "dcb31709b452b1cf9dc26972add0fda6";
+const DESMOS_CDN_URL = `https://www.desmos.com/api/v1.8/calculator.js?apiKey=${encodeURIComponent(DESMOS_EMBED_API_KEY)}`;
+
+function containsLatexDelimiters(value) {
+  const text = String(value || "");
+  return /\$\$[\s\S]+?\$\$|\$[^$\n]+\$|\\\([\s\S]+?\\\)|\\\[[\s\S]+?\\\]/.test(text);
+}
+
+function buildInlineFractionHtml(numerator, denominator) {
+  return `<span class="inline-fraction"><span class="fraction-top">${numerator}</span><span class="fraction-bar"></span><span class="fraction-bottom">${denominator}</span></span>`;
+}
+
+function formatDisplayMathHtml(value) {
+  const text = String(value || "");
+  let escaped = escapeHtml(text);
+  if (containsLatexDelimiters(text)) {
+    return escaped.replaceAll("\n", "<br />");
+  }
+  escaped = escaped.replace(/\(([^()\n]{1,28})\)\/\(([^()\n]{1,28})\)/g, (_, numerator, denominator) => buildInlineFractionHtml(numerator, denominator));
+  escaped = escaped.replace(/([A-Za-z0-9]+)\s*\/\s*([A-Za-z0-9]+)/g, (_, numerator, denominator) => buildInlineFractionHtml(numerator, denominator));
+  escaped = escaped.replace(/sqrt\(([^()\n]+)\)/g, '<span class="math-radical">&radic;<span class="math-radical-arg">$1</span></span>');
+  escaped = escaped.replace(/overline\(([^()\n]+)\)/g, '<span class="math-overline">$1</span>');
+  escaped = escaped.replace(/([A-Za-z0-9\)\]]+)\s*\^\s*(-?\d+(?:\.\d+)?)/g, "$1<sup>$2</sup>");
+  return escaped.replaceAll("\n", "<br />");
+}
+
+function typesetMath(target = document) {
+  if (!window.MathJax?.typesetPromise || !target) {
+    return;
+  }
+  window.MathJax.typesetPromise([target]).catch(() => {});
+}
+
+function initializeDesmosEmbeds(target = document) {
+  if (!window.Desmos || !target?.querySelectorAll) {
+    return;
+  }
+  target.querySelectorAll(".desmos-graph[data-desmos-expression], .desmos-graph[data-desmos-state]").forEach((element) => {
+    if (element.dataset.desmosMounted === "true") {
+      return;
+    }
+    element.dataset.desmosMounted = "true";
+    const calculator = window.Desmos.GraphingCalculator(element, {
+      expressions: false,
+      keypad: false,
+      settingsMenu: false,
+      zoomButtons: true,
+      expressionsCollapsed: true,
+      border: false,
+      projectorMode: true,
+    });
+    const stateText = element.dataset.desmosState;
+    if (stateText) {
+      try {
+        calculator.setState(JSON.parse(stateText));
+      } catch {
+        calculator.setExpression({ id: "main", latex: stateText });
+      }
+    } else if (element.dataset.desmosExpression) {
+      calculator.setExpression({ id: "main", latex: element.dataset.desmosExpression });
+    }
+    const left = Number(element.dataset.desmosLeft);
+    const right = Number(element.dataset.desmosRight);
+    const bottom = Number(element.dataset.desmosBottom);
+    const top = Number(element.dataset.desmosTop);
+    if ([left, right, bottom, top].every((value) => Number.isFinite(value))) {
+      calculator.setMathBounds({ left, right, bottom, top });
+    }
+    element._desmosCalculator = calculator;
+  });
+}
+
+function hydrateInteractiveMath(target = document) {
+  initializeDesmosEmbeds(target);
+  typesetMath(target);
 }
 
 function setStatus(target, message, type = "neutral") {
@@ -248,6 +644,62 @@ function setStatus(target, message, type = "neutral") {
 
 function setAuthStatus(message, type = "neutral") {
   setStatus(authStatus, message, type);
+}
+
+function renderDemoPlayer() {
+  if (!demoScreenTitle || !demoScreenCopy || !demoProgressDots || !demoScriptTitle || !demoScriptCopy) {
+    return;
+  }
+  const scene = demoScenes[activeDemoSceneIndex];
+  if (!scene) {
+    return;
+  }
+  if (demoScreenKicker) demoScreenKicker.textContent = scene.kicker;
+  if (demoScreenModule) demoScreenModule.textContent = scene.module;
+  demoScreenTitle.textContent = scene.title;
+  demoScreenCopy.textContent = scene.copy;
+  demoScriptTitle.textContent = `${scene.kicker} Script`;
+  demoScriptCopy.innerHTML = escapeHtml(scene.script).replace(/\n/g, "<br>");
+
+  if (demoScreenHighlights) {
+    demoScreenHighlights.innerHTML = scene.highlights
+      .map((item) => `<div class="demo-highlight-chip">${escapeHtml(item)}</div>`)
+      .join("");
+  }
+
+  if (demoProgressDots) {
+    demoProgressDots.innerHTML = demoScenes
+      .map(
+        (_, index) =>
+          `<button class="demo-progress-dot${index === activeDemoSceneIndex ? " active" : ""}" type="button" data-demo-scene="${index}" aria-label="Go to demo step ${index + 1}"></button>`,
+      )
+      .join("");
+  }
+
+  if (demoPlayButton) {
+    demoPlayButton.textContent = demoAutoplay ? "Pause" : "Play";
+  }
+}
+
+function scheduleDemoAutoplay() {
+  if (demoSceneTimer) {
+    window.clearTimeout(demoSceneTimer);
+    demoSceneTimer = null;
+  }
+  if (!demoAutoplay || !demoScreenTitle) {
+    return;
+  }
+  demoSceneTimer = window.setTimeout(() => {
+    activeDemoSceneIndex = (activeDemoSceneIndex + 1) % demoScenes.length;
+    renderDemoPlayer();
+    scheduleDemoAutoplay();
+  }, 3400);
+}
+
+function goToDemoScene(index) {
+  activeDemoSceneIndex = (index + demoScenes.length) % demoScenes.length;
+  renderDemoPlayer();
+  scheduleDemoAutoplay();
 }
 
 function setImportStatus(message, type = "neutral") {
@@ -310,6 +762,7 @@ function showAuthMode(mode) {
 function applyAuthState() {
   const signedIn = Boolean(teacherProfile?.email);
   document.body.classList.toggle("signed-in", signedIn);
+  document.body.classList.toggle("public-home", !signedIn && document.body.dataset.page === "home");
   authShell?.classList.toggle("is-hidden", signedIn);
   if (!signedIn && sessionReady && (!authShell || !authShell.children.length) && !window.location.pathname.endsWith("/index.html") && window.location.pathname !== "/") {
     window.location.replace("./index.html");
@@ -343,6 +796,12 @@ function applyTeacherProfile(profile) {
   document.body.dataset.preferredView = profile?.preferredView || "desktop";
   renderTeacherIdentity();
   applyAuthState();
+  if (profile?.email && emailUsername && !emailUsername.value) {
+    emailUsername.value = profile.email;
+  }
+  if (profile?.email && emailFromAddress && !emailFromAddress.value) {
+    emailFromAddress.value = profile.email;
+  }
   if (!profile) {
     currentEmailSettings = null;
     applyEmailSettings(null);
@@ -421,6 +880,94 @@ function normalizeTrend(value) {
   return ["up", "flat", "down"].includes(normalized) ? normalized : "flat";
 }
 
+function normalizeTopicName(value) {
+  return String(value || "").trim();
+}
+
+function normalizeDateToken(value, fallback = "") {
+  const token = String(value || "").trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(token)) {
+    return token;
+  }
+  const date = new Date(token);
+  if (Number.isNaN(date.getTime())) {
+    return fallback;
+  }
+  return date.toISOString().slice(0, 10);
+}
+
+function normalizeTopicAssessmentType(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  return ["quiz", "test", "classwork", "homework", "exit ticket", "project"].includes(normalized) ? normalized : "quiz";
+}
+
+function parseTopicHistoryValue(value) {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  const text = String(value || "").trim();
+  if (!text) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(text);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return text
+      .split(/\s*\|\s*/)
+      .map((entry) => {
+        const [topic, score, assessedOn = "", type = "quiz"] = entry.split(/\s*::\s*/);
+        return { topic, score, assessed_on: assessedOn, type };
+      })
+      .filter((entry) => normalizeTopicName(entry.topic));
+  }
+}
+
+function normalizeTopicHistoryEntry(entry, index = 0) {
+  const assessedOn = normalizeDateToken(entry.assessed_on || entry.date || entry.assessedOn || "", `2026-04-${String(Math.min(index + 1, 28)).padStart(2, "0")}`);
+  return {
+    topic: normalizeTopicName(entry.topic || entry.name || entry.label || `Topic ${index + 1}`),
+    score: clampNumber(entry.score, 0, 100, 0),
+    assessed_on: assessedOn,
+    type: normalizeTopicAssessmentType(entry.type),
+  };
+}
+
+function inferTopicHistoryFromSummary(student) {
+  const className = String(student.class_name || "").toLowerCase();
+  const topicSets = [
+    { test: /algebra/, topics: ["Linear Equations", "Exponents", "Factoring", "Quadratics"] },
+    { test: /geometry/, topics: ["Angles", "Triangles", "Similarity", "Proofs"] },
+    { test: /statistics/, topics: ["Sampling", "Probability", "Distributions", "Inference"] },
+    { test: /biology/, topics: ["Cells", "Genetics", "Respiration", "Lab Analysis"] },
+    { test: /chemistry/, topics: ["Atoms", "Moles", "Balancing", "Reactions"] },
+    { test: /history/, topics: ["Primary Sources", "Vocabulary", "Short Response", "Document Analysis"] },
+    { test: /english/, topics: ["Theme", "Evidence", "Rhetoric", "Writing"] },
+    { test: /computer|coding|python/, topics: ["For Loops", "Iteration", "Debugging", "Functions"] },
+    { test: /spanish|language/, topics: ["Vocabulary", "Speaking", "Listening", "Writing"] },
+  ];
+  const matched = topicSets.find((entry) => entry.test.test(className));
+  const topics = matched?.topics || ["Core Skill", "Practice", "Application", "Assessment"];
+  const quiz = clampNumber(student.recent_quiz_avg, 0, 100, 75);
+  const test = clampNumber(student.recent_test_avg, 0, 100, quiz);
+  const delta = Math.max(-12, Math.min(12, test - quiz));
+  const baseScores = [quiz + 4, quiz - 3, Math.round((quiz + test) / 2), test + delta / 2].map((score) => clampNumber(score, 0, 100, quiz));
+  return topics.map((topic, index) => ({
+    topic,
+    score: baseScores[index] ?? quiz,
+    assessed_on: `2026-04-${String(4 + index * 7).padStart(2, "0")}`,
+    type: index === 3 ? "test" : index === 2 ? "classwork" : "quiz",
+  }));
+}
+
+function getStudentTopicHistory(student) {
+  const normalized = parseTopicHistoryValue(student.topic_history)
+    .map((entry, index) => normalizeTopicHistoryEntry(entry, index))
+    .filter((entry) => entry.topic);
+  return normalized.length ? normalized : inferTopicHistoryFromSummary(student);
+}
+
 function normalizeStudent(record) {
   return {
     student_id: String(record.student_id || "").trim(),
@@ -439,6 +986,7 @@ function normalizeStudent(record) {
     teacher_notes: String(record.teacher_notes || "").trim(),
     advisor_email: normalizeEmail(record.advisor_email),
     parent_email: normalizeEmail(record.parent_email),
+    topic_history: getStudentTopicHistory(record),
   };
 }
 
@@ -726,8 +1274,21 @@ function createHtmlDocument(title, bodyHtml) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${escapeHtml(title)}</title>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\\\(", "\\\\)"]],
+          displayMath: [["\\\\[", "\\\\]"], ["$$", "$$"]],
+        },
+        startup: {
+          typeset: false,
+        },
+      };
+    </script>
+    <script defer src="${MATHJAX_CDN_URL}"></script>
+    <script defer src="${DESMOS_CDN_URL}"></script>
     <style>
-      body { font-family: Arial, sans-serif; margin: 32px; color: #1a1f2c; line-height: 1.55; background: linear-gradient(180deg, #f8faf7, #eef3ef); }
+      body { font-family: "Times New Roman", Georgia, serif; margin: 24px; color: #111827; line-height: 1.45; background: #ffffff; }
       h1, h2, h3 { margin: 0 0 12px; }
       .sheet { max-width: 860px; margin: 0 auto; }
       .card { border: 1px solid #d8dfeb; border-radius: 16px; padding: 18px; margin: 14px 0; background: #fff; box-shadow: 0 16px 36px rgba(20, 32, 51, 0.06); }
@@ -744,33 +1305,79 @@ function createHtmlDocument(title, bodyHtml) {
       .slide-page h2 { font-size: 32px; margin-bottom: 14px; }
       .slide-page p { font-size: 18px; line-height: 1.6; max-width: 32em; }
       .slide-notes { margin-top: 18px; padding-top: 14px; border-top: 1px solid #d7dfd5; color: #51607a; }
-      .parallel-assessment-sheet { background: #fff; border: 1px solid #d9dfeb; border-radius: 18px; padding: 28px; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08); }
-      .parallel-sheet-head { border-bottom: 1px solid #d8dfeb; padding-bottom: 18px; margin-bottom: 22px; }
+      .parallel-assessment-sheet { background: #fff; border: 1px solid #cfd6e3; border-radius: 0; padding: 18px 22px; box-shadow: none; }
+      .parallel-sheet-head { border-bottom: 1px solid #d8dfeb; padding-bottom: 12px; margin-bottom: 16px; }
       .parallel-section { margin-bottom: 26px; }
       .parallel-section-head { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; margin-bottom: 12px; }
-      .parallel-question { border: 1px solid #e3e8f2; border-radius: 14px; padding: 16px; margin-bottom: 14px; background: #fbfcff; }
+      .parallel-question { border: none; border-radius: 0; padding: 0 0 14px; margin-bottom: 14px; background: transparent; }
       .parallel-question-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 10px; }
-      .parallel-question h4 { margin-bottom: 10px; }
+      .parallel-question h4 { margin-bottom: 8px; font-size: 1rem; font-weight: 700; }
       .question-body p { margin: 0 0 8px; white-space: pre-wrap; }
       .answer-options { margin: 10px 0 0; }
       .student-answer-lines { display: grid; gap: 10px; margin-top: 14px; }
       .student-answer-lines span { display: block; min-height: 22px; border-bottom: 1px solid #bbc6db; }
-      .teacher-answer { margin-top: 14px; background: #eef4ff; border-radius: 12px; padding: 12px; }
+      .teacher-answer { margin-top: 12px; background: #f6f8fb; border-radius: 0; padding: 10px 12px; border-left: 3px solid #94a3b8; }
       .teacher-answer pre { white-space: pre-wrap; font-family: inherit; margin: 0 0 12px; }
-      .point-badge { font-size: 12px; font-weight: 700; color: #33517f; background: #eaf1ff; border-radius: 999px; padding: 6px 10px; white-space: nowrap; }
-      .section-code_writing .parallel-question { background: #fff8ef; border-color: #ecd6b2; }
+      .point-badge { font-size: 12px; font-weight: 700; color: #334155; background: #eef2f7; border-radius: 999px; padding: 4px 8px; white-space: nowrap; }
+      .section-code_writing .parallel-question { background: transparent; border-color: transparent; }
       .section-code_writing .parallel-section-head span { color: #8a5a12; }
       .section-short_answer .parallel-question { background: #f8fbff; }
       .two-column-key { column-count: 2; column-gap: 22px; }
       .two-column-key .parallel-sheet-head { column-span: all; break-after: avoid; }
       .two-column-key .parallel-section { break-inside: avoid; }
       .outline-list { margin-top: 10px; }
+      .desmos-graph, .geogebra-frame { width: 100%; min-height: 340px; border: 1px solid #d8dfeb; border-radius: 18px; overflow: hidden; background: #fff; }
+      .math-question-card { border: 1px solid #d8dfeb; border-radius: 18px; padding: 18px; margin: 18px 0; background: #fff; box-shadow: 0 18px 42px rgba(20, 32, 51, 0.08); }
+      .math-question-card h3 { margin-bottom: 10px; }
     </style>
   </head>
   <body>
     <div class="sheet">
       ${bodyHtml}
     </div>
+    <script>
+      function initTeacherFlowHtmlMath() {
+        if (window.Desmos) {
+          document.querySelectorAll(".desmos-graph[data-desmos-expression], .desmos-graph[data-desmos-state]").forEach((element) => {
+            if (element.dataset.desmosMounted === "true") {
+              return;
+            }
+            element.dataset.desmosMounted = "true";
+            const calculator = window.Desmos.GraphingCalculator(element, {
+              expressions: false,
+              keypad: false,
+              settingsMenu: false,
+              zoomButtons: true,
+              expressionsCollapsed: true,
+              border: false,
+              projectorMode: true,
+            });
+            if (element.dataset.desmosState) {
+              try {
+                calculator.setState(JSON.parse(element.dataset.desmosState));
+              } catch {
+                calculator.setExpression({ id: "main", latex: element.dataset.desmosState });
+              }
+            } else if (element.dataset.desmosExpression) {
+              calculator.setExpression({ id: "main", latex: element.dataset.desmosExpression });
+            }
+            const left = Number(element.dataset.desmosLeft);
+            const right = Number(element.dataset.desmosRight);
+            const bottom = Number(element.dataset.desmosBottom);
+            const top = Number(element.dataset.desmosTop);
+            if ([left, right, bottom, top].every((value) => Number.isFinite(value))) {
+              calculator.setMathBounds({ left, right, bottom, top });
+            }
+          });
+        }
+        if (window.MathJax?.typesetPromise) {
+          window.MathJax.typesetPromise([document.body]).catch(() => {});
+        }
+      }
+      window.addEventListener("load", () => {
+        window.setTimeout(initTeacherFlowHtmlMath, 0);
+      });
+    </script>
   </body>
 </html>`;
 }
@@ -1014,6 +1621,7 @@ async function requestAssessmentTransform(values, fileMeta, refinementPrompt = "
     body: JSON.stringify({
       sourceType: values.sourceType,
       targetType: values.targetType,
+      versionCount: values.versionCount,
       resourceText: mergedText,
       fileName: fileMeta?.name || "",
       mimeType: fileMeta?.type || "",
@@ -1025,10 +1633,14 @@ async function requestAssessmentTransform(values, fileMeta, refinementPrompt = "
 function buildAssessmentTransformCards(payload) {
   const extraction = payload?.extraction || {};
   const result = payload?.result || {};
+  editableAssessmentPayload = cloneJson(payload || {});
+  editableAssessmentState = cloneJson(result);
   const blueprint = result.blueprint || { sections: [], questionCount: 0 };
   const versions = Array.isArray(result.versions) ? result.versions : [];
+  activeAssessmentPreviewIndex = Math.min(activeAssessmentPreviewIndex, Math.max(versions.length - 1, 0));
   const summaryCard = {
     title: "Imported Assessment Map",
+    className: "assessment-summary-card",
     content: `
       <div class="resource-preview">
         <section class="resource-section">
@@ -1038,6 +1650,7 @@ function buildAssessmentTransformCards(payload) {
             <li>Parser used: ${escapeHtml(extraction.parser || "manual text")}</li>
             <li>Detected sections: ${escapeHtml(blueprint.sections?.length || 0)}</li>
             <li>Detected questions: ${escapeHtml(blueprint.questionCount || 0)}</li>
+            <li>Generated versions: ${escapeHtml(versions.length || 0)}</li>
             <li>Imported file: ${escapeHtml(extraction.fileName || "Pasted resource")}</li>
           </ul>
         </section>
@@ -1048,22 +1661,77 @@ function buildAssessmentTransformCards(payload) {
     `,
   };
 
-  const versionCards = versions.map((version) => ({
-    title: `${version.name} Preview`,
+  const viewerCard = versions.length
+    ? {
+        title: "Interactive Version Viewer",
+        className: "assessment-viewer-card",
+        content: `
+          <div class="assessment-version-viewer">
+            <div class="assessment-version-tabs" role="tablist" aria-label="Assessment versions">
+              ${versions
+                .map(
+                  (version, versionIndex) => `
+                    <button
+                      class="assessment-version-tab${versionIndex === activeAssessmentPreviewIndex ? " active" : ""}"
+                      type="button"
+                      role="tab"
+                      aria-selected="${versionIndex === activeAssessmentPreviewIndex ? "true" : "false"}"
+                      data-assessment-version-tab="${versionIndex}"
+                    >${escapeHtml(version.name)}</button>
+                  `,
+                )
+                .join("")}
+            </div>
+            <div class="assessment-version-panels">
+              ${versions
+                .map(
+                  (version, versionIndex) => `
+                    <section
+                      class="assessment-version-panel${versionIndex === activeAssessmentPreviewIndex ? " active" : " is-hidden"}"
+                      data-assessment-version-panel="${versionIndex}"
+                    >
+                      ${renderEditableAssessmentVersionBody(result, version, false)}
+                    </section>
+                  `,
+                )
+                .join("")}
+            </div>
+          </div>
+        `,
+      }
+    : null;
+
+  const versionCards = versions.map((version, versionIndex) => ({
+    title: `${version.name} Editor`,
+    className: "assessment-editor-card",
     content: `
       <div class="resource-preview">
-        ${(version.preview || [])
+        ${(version.sections || version.preview || [])
           .map(
-            (section) => `
+            (section, sectionIndex) => `
               <section class="resource-section">
-                <h5>${escapeHtml(section.title)}</h5>
+                <h5>${escapeHtml(section.displayTitle || section.title)}</h5>
                 <ul>
-                  ${(section.questions || []).map((question) => `<li>${escapeHtml(`${question.number}. ${question.stem}`)}</li>`).join("")}
+                  ${(section.questions || []).map((question) => `<li>${formatDisplayMathHtml(`${question.number}. ${question.stem}`)}</li>`).join("")}
                 </ul>
               </section>
             `,
           )
           .join("")}
+        <section class="resource-section assessment-editor-shell">
+          <div class="assessment-editor-header">
+            <div>
+              <h5>Customize ${escapeHtml(version.name)}</h5>
+              <p>Edit, remove, or add individual questions without rerunning the generator.</p>
+            </div>
+            <div class="resource-actions assessment-editor-actions">
+              <button class="secondary-button" type="button" data-assessment-copy-version="${versionIndex}">Copy Edited Version</button>
+              <button class="secondary-button" type="button" data-assessment-download-version="${versionIndex}">Download Edited Version</button>
+              <button class="secondary-button" type="button" data-assessment-download-key="${versionIndex}">Download Edited Key</button>
+            </div>
+          </div>
+          ${(version.sections || []).map((section, sectionIndex) => buildAssessmentEditorSection(version, versionIndex, section, sectionIndex)).join("")}
+        </section>
       </div>
       <div class="resource-actions">
         ${makeHtmlDownloadLink(`Download ${version.name} Student Page`, `${slugify(result.title || version.name)}-${slugify(version.name)}.html`, `${result.title || "Parallel Assessment"} ${version.name}`, version.studentHtml || "<p>No version generated.</p>")}
@@ -1072,7 +1740,7 @@ function buildAssessmentTransformCards(payload) {
     `,
   }));
 
-  return [summaryCard, ...versionCards];
+  return [summaryCard].concat(viewerCard ? [viewerCard] : [], versionCards);
 }
 
 function renderSlidePreview(slides) {
@@ -1084,7 +1752,7 @@ function renderSlidePreview(slides) {
             <section class="slide-card">
               <span class="slide-index">Slide ${index + 1}</span>
               <h5>${escapeHtml(slide.title)}</h5>
-              <p>${escapeHtml(slide.body).replaceAll("\n", "<br />")}</p>
+              <p>${formatDisplayMathHtml(slide.body)}</p>
             </section>
           `,
         )
@@ -1169,11 +1837,11 @@ function buildWorksheetPackFromPrompt(prompt) {
   const worksheetHtml = `
     <h1>${escapeHtml(title)}</h1>
     <p class="label">${escapeHtml(isApcsp ? "Aligned to AP CSP Algorithms and Programming practice" : "Classroom worksheet")}</p>
-    <div class="card"><p>${escapeHtml(worksheetText).replaceAll("\n", "<br />")}</p></div>
+    <div class="card"><p>${formatDisplayMathHtml(worksheetText)}</p></div>
   `;
   const keyHtml = `
     <h1>${escapeHtml(title)} Teacher Key</h1>
-    <div class="card"><p>${escapeHtml(answerKey).replaceAll("\n", "<br />")}</p></div>
+    <div class="card"><p>${formatDisplayMathHtml(answerKey)}</p></div>
   `;
 
   return { title, worksheetText, answerKey, worksheetHtml, keyHtml };
@@ -1448,7 +2116,7 @@ Teacher scoring guide:
   const renderPreviewSection = (title, text) => `
     <section class="resource-section">
       <h5>${escapeHtml(title)}</h5>
-      <p>${escapeHtml(text).replaceAll("\n", "<br />")}</p>
+      <p>${formatDisplayMathHtml(text)}</p>
     </section>
   `;
   const studentSheet = (title, intro, body) => `
@@ -1456,7 +2124,7 @@ Teacher scoring guide:
     <p class="label">${escapeHtml(className)} · Grade ${escapeHtml(gradeLevel || ageBand)} · ${escapeHtml(durationText)}</p>
     <div class="card"><strong>Today Goal</strong><p>${escapeHtml(goal)}</p></div>
     <div class="card"><strong>Directions</strong><p>${escapeHtml(intro)}</p></div>
-    <div class="card"><p>${escapeHtml(body).replaceAll("\n", "<br />")}</p></div>
+    <div class="card"><p>${formatDisplayMathHtml(body)}</p></div>
   `;
   const lessonPlanHtml = `
     <h1>${escapeHtml(topic)} Lesson Plan</h1>
@@ -1480,10 +2148,10 @@ Teacher scoring guide:
       </div>
     </div>
     <div class="card"><strong>Warm-Up</strong><div class="prompt">${escapeHtml(warmUpPrompt)}</div></div>
-    <div class="card"><strong>Worked Example</strong><p>${escapeHtml(workedExample).replaceAll("\n", "<br />")}</p></div>
-    <div class="card"><strong>Classwork</strong><p>${escapeHtml(classworkText).replaceAll("\n", "<br />")}</p></div>
-    <div class="card"><strong>Homework</strong><p>${escapeHtml(homeworkText).replaceAll("\n", "<br />")}</p></div>
-    <div class="card"><strong>Exit Ticket</strong><p>${escapeHtml(exitTicketText).replaceAll("\n", "<br />")}</p></div>
+    <div class="card"><strong>Worked Example</strong><p>${formatDisplayMathHtml(workedExample)}</p></div>
+    <div class="card"><strong>Classwork</strong><p>${formatDisplayMathHtml(classworkText)}</p></div>
+    <div class="card"><strong>Homework</strong><p>${formatDisplayMathHtml(homeworkText)}</p></div>
+    <div class="card"><strong>Exit Ticket</strong><p>${formatDisplayMathHtml(exitTicketText)}</p></div>
   `;
   const slideCards = isCoding
     ? [
@@ -1525,7 +2193,7 @@ Teacher move: ${slide.move}`,
           <section class="slide-page">
             <p class="slide-kicker">Slide ${index + 1}</p>
             <h2>${escapeHtml(slide.title)}</h2>
-            <p>${escapeHtml(slide.body).replaceAll("\n", "<br />")}</p>
+            <p>${formatDisplayMathHtml(slide.body)}</p>
             <div class="slide-notes"><strong>Teacher move:</strong> ${escapeHtml(slide.move)}</div>
           </section>
         `,
@@ -1541,7 +2209,7 @@ Teacher move: ${slide.move}`,
           <div class="card">
             <p class="label">Slide ${index + 1}</p>
             <h2>${escapeHtml(slide.title)}</h2>
-            <p>${escapeHtml(slide.body).replaceAll("\n", "<br />")}</p>
+            <p>${formatDisplayMathHtml(slide.body)}</p>
             <p><strong>Teacher move:</strong> ${escapeHtml(slide.move)}</p>
           </div>
         `,
@@ -1552,7 +2220,7 @@ Teacher move: ${slide.move}`,
   const workedExampleHtml = `
     <h1>${escapeHtml(topic)} Worked Example</h1>
     <p class="label">${escapeHtml(className)} · Grade ${escapeHtml(gradeLevel || ageBand)}</p>
-    <div class="card"><p>${escapeHtml(workedExample).replaceAll("\n", "<br />")}</p></div>
+    <div class="card"><p>${formatDisplayMathHtml(workedExample)}</p></div>
   `;
   const classworkHtml = studentSheet(`${topic} Classwork`, "Show your thinking. If you finish early, check one answer and explain why it is correct.", classworkText);
   const homeworkHtml = studentSheet(`${topic} Homework`, "Complete each part carefully. Bring your work and one question to the next class.", homeworkText);
@@ -1560,7 +2228,7 @@ Teacher move: ${slide.move}`,
   const answerKeyHtml = `
     <h1>${escapeHtml(topic)} Answer Key</h1>
     <p class="label">${escapeHtml(className)} · Teacher Use</p>
-    <div class="card"><p>${escapeHtml(answerKeyText).replaceAll("\n", "<br />")}</p></div>
+    <div class="card"><p>${formatDisplayMathHtml(answerKeyText)}</p></div>
   `;
 
   return [
@@ -1679,13 +2347,224 @@ function renderOutputCards(target, cards) {
   target.innerHTML = cards
     .map(
       (card) => `
-        <article class="output-card">
+        <article class="output-card ${escapeHtml(card.className || "")}">
           <h4>${escapeHtml(card.title)}</h4>
           ${card.content}
         </article>
       `,
     )
     .join("");
+  hydrateInteractiveMath(target);
+}
+
+function cloneJson(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function serializeAssessmentQuestion(question) {
+  const lines = [`${question.number}. ${question.stem || ""}`.trim()];
+  (question.body || []).forEach((line) => {
+    if (String(line || "").trim()) {
+      lines.push(String(line).trim());
+    }
+  });
+  (question.options || []).forEach((option) => {
+    const optionText = [option.label, option.text].filter(Boolean).join(". ");
+    if (optionText) {
+      lines.push(optionText);
+    }
+  });
+  return lines.join("\n");
+}
+
+function serializeAssessmentVersion(version) {
+  return (version.sections || [])
+    .map((section) => [`${section.displayTitle || section.title}`].concat((section.questions || []).map((question) => serializeAssessmentQuestion(question))).join("\n\n"))
+    .join("\n\n");
+}
+
+function renderEditableAssessmentVersionBody(result, version, showAnswers = false) {
+  const totalPoints = (version.sections || []).reduce((sum, section) => sum + (section.totalPoints || 0), 0);
+  return `
+    <div class="parallel-assessment-sheet">
+      <header class="parallel-sheet-head">
+        <p class="label">${escapeHtml(result.context?.course || "Classroom")}${result.context?.duration ? ` · ${escapeHtml(result.context.duration)}` : ""}</p>
+        <h1>${escapeHtml(result.context?.topic || "Assessment")} - ${escapeHtml(version.name || "Version")}</h1>
+        <p class="label">${escapeHtml(`Total Points: ${totalPoints}`)}</p>
+      </header>
+      ${(version.sections || [])
+        .map(
+          (section) => `
+            <section class="parallel-section">
+              <div class="parallel-section-head">
+                <h3>${escapeHtml(section.displayTitle || section.title || "Section")}</h3>
+                <span>${escapeHtml(`${(section.questions || []).length} questions`)}</span>
+              </div>
+              ${(section.questions || [])
+                .map(
+                  (question) => `
+                    <article class="parallel-question">
+                      <div class="parallel-question-head">
+                        <h4>${formatDisplayMathHtml(`${question.number}. ${question.stem || ""}`)}</h4>
+                        <span class="point-badge">${escapeHtml(`${question.points || 1} pt${question.points === 1 ? "" : "s"}`)}</span>
+                      </div>
+                      ${(question.body || []).map((line) => `<p>${formatDisplayMathHtml(line)}</p>`).join("")}
+                      ${
+                        question.options?.length
+                          ? `<ul class="answer-options">${question.options.map((option) => `<li><strong>${escapeHtml(option.label)}.</strong> ${formatDisplayMathHtml(option.text)}</li>`).join("")}</ul>`
+                          : ""
+                      }
+                      ${
+                        showAnswers
+                          ? `<div class="teacher-answer"><p><strong>Answer / Key:</strong></p><pre>${escapeHtml(question.solvedAnswer || question.answer || "")}</pre></div>`
+                          : `<div class="student-answer-lines">${Array.from({ length: Math.max(1, Number(question.responseLines || 3)) }, () => "<span></span>").join("")}</div>`
+                      }
+                    </article>
+                  `,
+                )
+                .join("")}
+            </section>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function downloadStringAsFile(filename, payload, mimeType = "text/plain;charset=utf-8") {
+  const link = document.createElement("a");
+  link.href = `data:${mimeType},${encodeURIComponent(payload)}`;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
+function persistStudentsSnapshot() {
+  try {
+    window.localStorage?.setItem(TEACHERFLOW_SNAPSHOT_KEY, JSON.stringify(students));
+  } catch {
+    // non-blocking snapshot mirror
+  }
+}
+
+function getTeacherFlowNotes() {
+  try {
+    return JSON.parse(window.localStorage?.getItem(TEACHERFLOW_NOTES_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function setTeacherFlowNotes(notes) {
+  try {
+    window.localStorage?.setItem(TEACHERFLOW_NOTES_KEY, JSON.stringify(notes));
+  } catch {
+    // non-blocking
+  }
+}
+
+function buildAssessmentEditorSection(version, versionIndex, section, sectionIndex) {
+  const firstPath = `${versionIndex}:${sectionIndex}:0`;
+  const activePath = activeAssessmentEditorPath || firstPath;
+  return `
+    <section class="resource-section assessment-editor-section">
+      <div class="assessment-editor-section-head">
+        <h5>${escapeHtml(section.displayTitle || section.title || "Section")}</h5>
+        <span class="queue-badge">${escapeHtml(`${(section.questions || []).length} questions`)}</span>
+      </div>
+      <div class="assessment-question-tabs" role="tablist" aria-label="${escapeHtml(section.displayTitle || section.title || "Section")} questions">
+        ${(section.questions || [])
+          .map(
+            (question, questionIndex) => `
+              <button
+                class="assessment-question-tab${activePath === `${versionIndex}:${sectionIndex}:${questionIndex}` ? " active" : ""}"
+                type="button"
+                data-assessment-question-tab="${versionIndex}:${sectionIndex}:${questionIndex}"
+              >${escapeHtml(`Q${question.number}`)}</button>
+            `,
+          )
+          .join("")}
+      </div>
+      <div class="assessment-editor-list">
+        ${(section.questions || [])
+          .map(
+            (question, questionIndex) => `
+              <article class="assessment-editor-question${activePath === `${versionIndex}:${sectionIndex}:${questionIndex}` ? " active" : " is-hidden"}" data-assessment-editor-row="${versionIndex}:${sectionIndex}:${questionIndex}">
+                <div class="assessment-editor-topline">
+                  <strong>${escapeHtml(`Question ${question.number}`)}</strong>
+                  <button class="ghost-button" type="button" data-assessment-remove-question="${versionIndex}:${sectionIndex}:${questionIndex}">Remove</button>
+                </div>
+                <label class="assessment-editor-field">
+                  Prompt
+                  <textarea rows="3" data-assessment-stem="${versionIndex}:${sectionIndex}:${questionIndex}">${escapeHtml(question.stem || "")}</textarea>
+                </label>
+                <div class="assessment-editor-meta-grid">
+                  <label class="assessment-editor-field">
+                    Points
+                    <input type="number" min="1" max="20" step="1" value="${escapeHtml(question.points || 1)}" data-assessment-points="${versionIndex}:${sectionIndex}:${questionIndex}" />
+                  </label>
+                </div>
+                <label class="assessment-editor-field">
+                  Extra lines shown under the question
+                  <span class="microcopy">Use this for directions, answer choices, graph instructions, figure labels, or teacher notes that should stay with this specific item.</span>
+                  <textarea rows="4" data-assessment-body="${versionIndex}:${sectionIndex}:${questionIndex}">${escapeHtml((question.body || []).join("\n"))}</textarea>
+                </label>
+                <div class="assessment-editor-preview-card">
+                  <span class="metric-label">Live Preview</span>
+                  <p data-assessment-live-preview="${versionIndex}:${sectionIndex}:${questionIndex}">${formatDisplayMathHtml(serializeAssessmentQuestion(question))}</p>
+                </div>
+              </article>
+            `,
+          )
+          .join("")}
+      </div>
+      <div class="assessment-editor-footer">
+        <button class="primary-button" type="button" data-assessment-add-question="${versionIndex}:${sectionIndex}">Add Question At End</button>
+      </div>
+    </section>
+  `;
+}
+
+function renumberAssessmentVersion(version) {
+  let nextNumber = 1;
+  (version.sections || []).forEach((section) => {
+    (section.questions || []).forEach((question) => {
+      question.number = nextNumber;
+      nextNumber += 1;
+    });
+  });
+}
+
+function rerenderEditableAssessmentCards() {
+  if (!editableAssessmentPayload || !editableAssessmentState || !repurposeOutput) {
+    return;
+  }
+  if (!activeAssessmentEditorPath) {
+    const firstSection = editableAssessmentState.versions?.[0]?.sections?.[0];
+    if (firstSection?.questions?.length) {
+      activeAssessmentEditorPath = "0:0:0";
+    }
+  }
+  editableAssessmentPayload.result = cloneJson(editableAssessmentState);
+  renderOutputCards(repurposeOutput, buildAssessmentTransformCards(editableAssessmentPayload));
+  if (pendingAssessmentScrollTarget) {
+    const target = document.querySelector(`[data-assessment-editor-row="${CSS.escape(pendingAssessmentScrollTarget)}"]`);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    pendingAssessmentScrollTarget = "";
+  }
+}
+
+function getEditableAssessmentQuestion(pathValue) {
+  const [versionIndex, sectionIndex, questionIndex] = String(pathValue || "")
+    .split(":")
+    .map((value) => Number.parseInt(value, 10));
+  const version = editableAssessmentState?.versions?.[versionIndex];
+  const section = version?.sections?.[sectionIndex];
+  const question = section?.questions?.[questionIndex];
+  return { versionIndex, sectionIndex, questionIndex, version, section, question };
 }
 
 function buildRepurposeOutput(values) {
@@ -1733,7 +2612,7 @@ function buildRepurposeOutput(values) {
           <div class="resource-preview">
             <section class="resource-section">
               <h5>${escapeHtml(worksheetPack.title)}</h5>
-              <p>${escapeHtml(worksheetPack.worksheetText).replaceAll("\n", "<br />")}</p>
+              <p>${formatDisplayMathHtml(worksheetPack.worksheetText)}</p>
             </section>
           </div>
           <div class="resource-actions">
@@ -1850,7 +2729,7 @@ Exit: Write the rule or process in one sentence.`;
   const repurposeHtml = `
     <h1>${escapeHtml(effectiveTitle)}</h1>
     <p class="label">${escapeHtml(values.sourceType)} repurposed for ${escapeHtml(audience)}</p>
-    <div class="card"><p>${escapeHtml(concreteOutput).replaceAll("\n", "<br />")}</p></div>
+    <div class="card"><p>${formatDisplayMathHtml(concreteOutput)}</p></div>
   `;
 
   return [
@@ -1872,7 +2751,7 @@ Exit: Write the rule or process in one sentence.`;
         <div class="resource-preview">
           <section class="resource-section">
             <h5>Usable Preview</h5>
-            <p>${escapeHtml(concreteOutput).replaceAll("\n", "<br />")}</p>
+            <p>${formatDisplayMathHtml(concreteOutput)}</p>
           </section>
         </div>
         <div class="resource-actions">
@@ -2188,7 +3067,7 @@ Sub move: ${slide.move}`,
           <section class="slide-page">
             <p class="slide-kicker">Slide ${index + 1}</p>
             <h2>${escapeHtml(slide.title)}</h2>
-            <p>${escapeHtml(slide.body).replaceAll("\n", "<br />")}</p>
+            <p>${formatDisplayMathHtml(slide.body)}</p>
             <div class="slide-notes"><strong>Sub move:</strong> ${escapeHtml(slide.move)}</div>
           </section>
         `,
@@ -2200,19 +3079,19 @@ Sub move: ${slide.move}`,
     <h1>${escapeHtml(className)} ${escapeHtml(independentWorkLabel)}</h1>
     <p class="label">${escapeHtml(topic)} · ${escapeHtml(durationText)}</p>
     <div class="card"><strong>Directions</strong><p>Complete the warm-up, follow the modeled example, and work through the practice in order. Show your thinking and turn everything in before class ends.</p></div>
-    <div class="card"><p>${escapeHtml(worksheetText).replaceAll("\n", "<br />")}</p></div>
+    <div class="card"><p>${formatDisplayMathHtml(worksheetText)}</p></div>
   `;
 
   const exitTicketHtml = `
     <h1>${escapeHtml(className)} Exit Ticket</h1>
     <p class="label">${escapeHtml(topic)}</p>
-    <div class="card"><p>${escapeHtml(exitTicketText).replaceAll("\n", "<br />")}</p></div>
+    <div class="card"><p>${formatDisplayMathHtml(exitTicketText)}</p></div>
   `;
 
   const answerKeyHtml = `
     <h1>${escapeHtml(className)} Answer Key</h1>
     <p class="label">${escapeHtml(topic)} · Teacher / Sub Use</p>
-    <div class="card"><p>${escapeHtml(answerKeyText).replaceAll("\n", "<br />")}</p></div>
+    <div class="card"><p>${formatDisplayMathHtml(answerKeyText)}</p></div>
   `;
 
   return {
@@ -2525,11 +3404,11 @@ function buildSubPlan(values) {
                 </section>
                 <section class="resource-section">
                   <h5>Mini-Lesson</h5>
-                  <p>${escapeHtml(createdLessonMaterials.modelPreview).replaceAll("\n", "<br />")}</p>
+                  <p>${formatDisplayMathHtml(createdLessonMaterials.modelPreview)}</p>
                 </section>
                 <section class="resource-section">
                   <h5>${escapeHtml(independentWorkLabel)}</h5>
-                  <p>${escapeHtml(createdLessonMaterials.practicePreview).replaceAll("\n", "<br />")}</p>
+                  <p>${formatDisplayMathHtml(createdLessonMaterials.practicePreview)}</p>
                 </section>
               </div>
               <div class="resource-actions">
@@ -2544,7 +3423,7 @@ function buildSubPlan(values) {
               <div class="resource-preview">
                 <section class="resource-section">
                   <h5>Worksheet Preview</h5>
-                  <p>${escapeHtml(createdLessonMaterials.worksheetPreview).replaceAll("\n", "<br />")}</p>
+                  <p>${formatDisplayMathHtml(createdLessonMaterials.worksheetPreview)}</p>
                 </section>
               </div>
               <div class="resource-actions">
@@ -2560,11 +3439,11 @@ function buildSubPlan(values) {
               <div class="resource-preview">
                 <section class="resource-section">
                   <h5>Exit Ticket Preview</h5>
-                  <p>${escapeHtml(createdLessonMaterials.exitTicketPreview).replaceAll("\n", "<br />")}</p>
+                  <p>${formatDisplayMathHtml(createdLessonMaterials.exitTicketPreview)}</p>
                 </section>
                 <section class="resource-section">
                   <h5>Answer Key Preview</h5>
-                  <p>${escapeHtml(createdLessonMaterials.answerKeyPreview).replaceAll("\n", "<br />")}</p>
+                  <p>${formatDisplayMathHtml(createdLessonMaterials.answerKeyPreview)}</p>
                 </section>
               </div>
               <div class="resource-actions">
@@ -2957,12 +3836,52 @@ function renderClassSummary() {
   const outreach = classStudents.filter((student) => student.supportLevel !== "low" && (student.advisor_email || student.parent_email));
   const avgQuiz = Math.round(classStudents.reduce((sum, student) => sum + student.recent_quiz_avg, 0) / classStudents.length);
   const avgTest = Math.round(classStudents.reduce((sum, student) => sum + student.recent_test_avg, 0) / classStudents.length);
+  const avgAttendance = Math.round(classStudents.reduce((sum, student) => sum + student.attendance_percent, 0) / classStudents.length);
+  const avgMissing = (classStudents.reduce((sum, student) => sum + student.missing_assignments, 0) / classStudents.length).toFixed(1);
   const likelyReteach =
     avgQuiz < 80 || avgTest < 80
       ? `Current assessment concepts in ${selectedClass} likely need reteaching because class averages are ${avgQuiz}% on quizzes and ${avgTest}% on tests.`
       : `Current assessment data in ${selectedClass} does not signal an immediate whole-class reteach need.`;
 
+  const outlook = classStudents
+    .map((student) => {
+      const baseline = student.recent_test_avg * 0.5 + student.recent_quiz_avg * 0.3 + student.attendance_percent * 0.2;
+      const missingPenalty = student.missing_assignments * 2.8 + student.late_submissions * 1.1;
+      const trendAdjustment = student.score_trend === "up" ? 4 : student.score_trend === "down" ? -6 : 0;
+      const participationAdjustment = (student.participation_score - 3) * 2;
+      const predicted = Math.max(42, Math.min(99, Math.round(baseline - missingPenalty + trendAdjustment + participationAdjustment)));
+      const readiness = predicted >= 88 ? "Strong" : predicted >= 75 ? "Watch" : "At Risk";
+      return {
+        ...student,
+        predicted,
+        readiness,
+      };
+    })
+    .sort((left, right) => left.predicted - right.predicted);
+
+  const topRisk = outlook.slice(0, 5);
+  const topReady = [...outlook].sort((left, right) => right.predicted - left.predicted).slice(0, 3);
+  const classPrediction = Math.round(outlook.reduce((sum, student) => sum + student.predicted, 0) / outlook.length);
+
   renderOutputCards(classIntelOutput, [
+    {
+      title: "Current Class Health",
+      content: `
+        <ul>
+          <li>Average quiz: ${escapeHtml(`${avgQuiz}%`)}</li>
+          <li>Average test: ${escapeHtml(`${avgTest}%`)}</li>
+          <li>Average attendance: ${escapeHtml(`${avgAttendance}%`)}</li>
+          <li>Average missing assignments: ${escapeHtml(String(avgMissing))}</li>
+        </ul>
+      `,
+    },
+    {
+      title: "Upcoming Assessment Outlook",
+      content: `
+        <p>${escapeHtml(`TeacherFlowAI estimates a class average around ${classPrediction}% on the next assessment if current patterns hold.`)}</p>
+        <ul>${topRisk.map((student) => `<li>${escapeHtml(student.student_name)} · predicted ${escapeHtml(`${student.predicted}%`)} · ${escapeHtml(student.readiness)}</li>`).join("")}</ul>
+      `,
+    },
     {
       title: "Trending Down",
       content: `<ul>${trendingDown.map((student) => `<li>${escapeHtml(student.student_name)} (${student.support_risk_score})</li>`).join("") || "<li>No students are currently trending down.</li>"}</ul>`,
@@ -2970,6 +3889,10 @@ function renderClassSummary() {
     {
       title: "Improved",
       content: `<ul>${improved.map((student) => `<li>${escapeHtml(student.student_name)}</li>`).join("") || "<li>No students are currently marked as improving.</li>"}</ul>`,
+    },
+    {
+      title: "Students Most Ready",
+      content: `<ul>${topReady.map((student) => `<li>${escapeHtml(student.student_name)} · predicted ${escapeHtml(`${student.predicted}%`)}</li>`).join("") || "<li>No current readiness list.</li>"}</ul>`,
     },
     {
       title: "Likely Reteach Concepts",
@@ -2991,6 +3914,254 @@ function renderClassSummary() {
       `,
     },
   ]);
+
+  renderInsightsDashboard(selectedClass, classStudents, {
+    avgQuiz,
+    avgTest,
+    avgAttendance,
+    avgMissing,
+    classPrediction,
+    likelyReteach,
+  });
+}
+
+function buildTopicSummary(history) {
+  const buckets = new Map();
+  history.forEach((entry) => {
+    if (!entry?.topic) {
+      return;
+    }
+    if (!buckets.has(entry.topic)) {
+      buckets.set(entry.topic, []);
+    }
+    buckets.get(entry.topic).push(clampNumber(entry.score, 0, 100, 0));
+  });
+  return [...buckets.entries()].map(([topic, scores]) => ({
+    topic,
+    average: Math.round(scores.reduce((sum, score) => sum + score, 0) / Math.max(scores.length, 1)),
+    attempts: scores.length,
+  }));
+}
+
+function buildClassTopicSummary(classStudents) {
+  const buckets = new Map();
+  classStudents.forEach((student) => {
+    getStudentTopicHistory(student).forEach((entry) => {
+      if (!buckets.has(entry.topic)) {
+        buckets.set(entry.topic, { topic: entry.topic, scores: [], struggling: [] });
+      }
+      const bucket = buckets.get(entry.topic);
+      bucket.scores.push(entry.score);
+      if (entry.score < 70) {
+        bucket.struggling.push(student);
+      }
+    });
+  });
+
+  return [...buckets.values()]
+    .map((bucket) => ({
+      topic: bucket.topic,
+      average: Math.round(bucket.scores.reduce((sum, score) => sum + score, 0) / Math.max(bucket.scores.length, 1)),
+      struggleCount: bucket.struggling.length,
+      struggleRate: bucket.struggling.length / Math.max(classStudents.length, 1),
+      struggling: bucket.struggling,
+    }))
+    .sort((left, right) => left.average - right.average);
+}
+
+function buildClassTrendSeries(classStudents) {
+  const buckets = new Map();
+  classStudents.forEach((student) => {
+    getStudentTopicHistory(student).forEach((entry) => {
+      const key = entry.assessed_on || "";
+      if (!key) {
+        return;
+      }
+      if (!buckets.has(key)) {
+        buckets.set(key, []);
+      }
+      buckets.get(key).push(entry.score);
+    });
+  });
+
+  return [...buckets.entries()]
+    .sort((left, right) => left[0].localeCompare(right[0]))
+    .map(([date, scores]) => ({
+      label: new Date(`${date}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+      average: Math.round(scores.reduce((sum, score) => sum + score, 0) / Math.max(scores.length, 1)),
+    }));
+}
+
+function renderInsightsDashboard(selectedClass, classStudents, summary) {
+  if (
+    !insightStudentSelect ||
+    !insightStudentAverageValue ||
+    !insightStudentScoreList ||
+    !insightClassAverageTable ||
+    !insightAlertList ||
+    !insightRecommendationList ||
+    !insightStudentChartCanvas ||
+    !insightClassChartCanvas
+  ) {
+    return;
+  }
+
+  const studentOptions = classStudents
+    .map((student) => `<option value="${escapeHtml(student.student_id)}">${escapeHtml(student.student_name)}</option>`)
+    .join("");
+  const previous = insightStudentSelect.value;
+  insightStudentSelect.innerHTML = studentOptions;
+  if (!classStudents.some((student) => student.student_id === previous)) {
+    insightStudentSelect.value = classStudents[0]?.student_id || "";
+  } else {
+    insightStudentSelect.value = previous;
+  }
+
+  const selectedStudent =
+    classStudents.find((student) => student.student_id === insightStudentSelect.value) || classStudents[0];
+
+  const selectedTopicSummary = buildTopicSummary(getStudentTopicHistory(selectedStudent));
+  const selectedScores = selectedTopicSummary.map((entry) => entry.average);
+  const selectedAverage = Math.round(selectedScores.reduce((sum, value) => sum + value, 0) / Math.max(selectedScores.length, 1));
+  insightStudentAverageValue.className = `score-badge ${selectedAverage >= 75 ? "score-good" : selectedAverage >= 60 ? "score-warn" : "score-bad"}`;
+  insightStudentAverageValue.textContent = `${selectedAverage}%`;
+
+  insightStudentScoreList.innerHTML = selectedTopicSummary
+    .map((entry) => {
+      const score = entry.average;
+      return `
+        <article class="student-score-item ${score < 70 ? "bad" : ""}">
+          <div>
+            <strong>${escapeHtml(entry.topic)}</strong>
+            <div class="microcopy">${score < 70 ? "Below Target (<70%)" : "On Track (70%+)"} · ${escapeHtml(`${entry.attempts} score${entry.attempts === 1 ? "" : "s"}`)}</div>
+          </div>
+          <span class="score-badge ${score >= 75 ? "score-good" : score >= 60 ? "score-warn" : "score-bad"}">${escapeHtml(`${score}%`)}</span>
+        </article>
+      `;
+    })
+    .join("");
+
+  const notes = getTeacherFlowNotes();
+  if (insightStudentNotes) {
+    insightStudentNotes.value = notes[selectedStudent.student_id] || selectedStudent.teacher_notes || "";
+  }
+  if (insightNotesStatus) {
+    insightNotesStatus.textContent = "";
+  }
+
+  const classTopicSummary = buildClassTopicSummary(classStudents);
+  const classTrendSeries = buildClassTrendSeries(classStudents);
+
+  insightClassAverageTable.innerHTML = `
+    <section class="resource-section">
+      <h5>${escapeHtml(selectedClass)} Topic Averages</h5>
+      <table class="class-average-table">
+        <thead><tr><th>Topic</th><th>Average</th><th>Status</th></tr></thead>
+        <tbody>
+          ${classTopicSummary
+            .map((entry) => {
+              const score = entry.average;
+              const statusClass = score > 75 ? "topic-good" : score >= 60 ? "topic-warn" : "topic-bad";
+              const label = score > 75 ? "Healthy" : score >= 60 ? "Watch" : "Urgent";
+              return `<tr><td><strong>${escapeHtml(entry.topic)}</strong></td><td>${escapeHtml(`${score}%`)}</td><td><span class="topic-pill ${statusClass}">${escapeHtml(label)}</span></td></tr>`;
+            })
+            .join("")}
+        </tbody>
+      </table>
+    </section>
+  `;
+
+  const weakIndicators = classTopicSummary.filter((entry) => entry.struggleRate > 0.4);
+
+  if (insightStudentCount) insightStudentCount.textContent = String(classStudents.length);
+  if (insightClassAverage) {
+    const classAverage = Math.round(classTopicSummary.reduce((sum, entry) => sum + entry.average, 0) / Math.max(classTopicSummary.length, 1));
+    insightClassAverage.textContent = `${classAverage}%`;
+  }
+  if (insightWeakTopicCount) insightWeakTopicCount.textContent = String(weakIndicators.length);
+  if (insightPredictionAverage) insightPredictionAverage.textContent = `${summary.classPrediction}%`;
+
+  insightAlertList.innerHTML = weakIndicators.length
+    ? weakIndicators
+        .map(
+          (entry) => `
+            <article class="alert-card">
+              <h4>&#9888; ${escapeHtml(`${entry.struggleCount} out of ${classStudents.length} students struggled with ${entry.topic}`)}</h4>
+              <p class="microcopy">${escapeHtml(entry.struggling.map((student) => student.student_name).join(", "))}</p>
+            </article>
+          `,
+        )
+        .join("")
+    : `<div class="empty-state"><h4>No weak-topic alerts</h4><p>No current class indicator has more than 40% of students below 70%.</p></div>`;
+
+  insightRecommendationList.innerHTML = weakIndicators.length
+    ? weakIndicators
+        .map(
+          (entry) => `
+            <article class="recommendation-card">
+              <h4>${escapeHtml(entry.topic)} Recommendation</h4>
+              <p>${escapeHtml(`Recommended action: prepare review guide or re-teach ${entry.topic.toLowerCase()} before the next assessment.`)}</p>
+            </article>
+          `,
+        )
+        .join("")
+    : "";
+
+  if (insightStudentChart) {
+    insightStudentChart.destroy();
+  }
+  insightStudentChart = new Chart(insightStudentChartCanvas, {
+    type: "bar",
+    data: {
+      labels: selectedTopicSummary.map((entry) => entry.topic),
+      datasets: [
+        {
+          label: `${selectedStudent.student_name} Topic Scores`,
+          data: selectedScores,
+          backgroundColor: selectedScores.map((score) => (score < 70 ? "rgba(201, 73, 73, 0.72)" : score < 85 ? "rgba(196, 138, 29, 0.72)" : "rgba(46, 139, 87, 0.72)")),
+          borderRadius: 10,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, max: 100, ticks: { callback: (value) => `${value}%` } },
+      },
+    },
+  });
+
+  if (insightClassChart) {
+    insightClassChart.destroy();
+  }
+  insightClassChart = new Chart(insightClassChartCanvas, {
+    type: "line",
+    data: {
+      labels: classTrendSeries.map((entry) => entry.label),
+      datasets: [
+        {
+          label: "Class Performance Trend",
+          data: classTrendSeries.map((entry) => entry.average),
+          borderColor: "#3157d7",
+          backgroundColor: "rgba(49, 87, 215, 0.12)",
+          tension: 0.3,
+          fill: true,
+          pointRadius: 6,
+          pointBackgroundColor: classTrendSeries.map((entry) => (entry.average > 75 ? "#2e8b57" : entry.average >= 60 ? "#c48a1d" : "#c94949")),
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, max: 100, ticks: { callback: (value) => `${value}%` } },
+      },
+    },
+  });
 }
 
 function renderWorkloadQueue(scoredStudents) {
@@ -3183,14 +4354,15 @@ function applyEmailSettings(settings) {
     ...(settings || {}),
   };
   currentEmailSettings = nextSettings;
+  const fallbackEmail = teacherProfile?.email || "";
   if (!emailSettingsForm) {
     return;
   }
   if (emailHost) emailHost.value = nextSettings.host || DEFAULT_EMAIL_PROVIDER.host;
   if (emailPort) emailPort.value = nextSettings.port || DEFAULT_EMAIL_PROVIDER.port;
   if (emailSecure) emailSecure.value = String(Boolean(nextSettings.secure));
-  if (emailUsername) emailUsername.value = nextSettings.username || "";
-  if (emailFromAddress) emailFromAddress.value = nextSettings.fromAddress || "";
+  if (emailUsername) emailUsername.value = nextSettings.username || fallbackEmail;
+  if (emailFromAddress) emailFromAddress.value = nextSettings.fromAddress || fallbackEmail;
   if (emailPassword) emailPassword.value = "";
   if (emailPassword) {
     emailPassword.placeholder = nextSettings.hasPassword ? "Password saved. Enter a new one only if you want to replace it." : "App password or SMTP password";
@@ -3433,6 +4605,7 @@ async function refinePlanningContext(prompt) {
 }
 
 function renderAll() {
+  persistStudentsSnapshot();
   renderSupportWorkspace();
   renderClassSummary();
   renderClassSettings();
@@ -3467,6 +4640,21 @@ async function restoreSession() {
   } catch {
     applyTeacherProfile(null);
   }
+}
+
+async function signInDemo() {
+  const payload = await apiRequest("/api/auth/demo", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+  applyTeacherProfile(payload.user);
+  await loadProfile();
+  await loadEmailSettings();
+  await loadStudents();
+  await loadWorkspace();
+  renderAll();
+  setAuthStatus("Demo workspace loaded.", "success");
+  closeMobileNav();
 }
 
 teachingPackForm?.addEventListener("submit", (event) => {
@@ -3545,6 +4733,7 @@ repurposeForm?.addEventListener("submit", async (event) => {
   const values = {
     sourceType: formData.get("sourceType").toString(),
     targetType: formData.get("targetType").toString(),
+    versionCount: Number.parseInt(formData.get("versionCount").toString(), 10) || 2,
     resourceText: formData.get("resourceText").toString().trim(),
   };
 
@@ -3648,6 +4837,16 @@ signInForm?.addEventListener("submit", async (event) => {
   } catch (error) {
     setAuthStatus(error.message, "error");
   }
+});
+
+[tryDemoButton, tryDemoInlineButton, heroDemoButton].forEach((button) => {
+  button?.addEventListener("click", async () => {
+    try {
+      await signInDemo();
+    } catch (error) {
+      setAuthStatus(error.message, "error");
+    }
+  });
 });
 
 createAccountForm?.addEventListener("submit", async (event) => {
@@ -3813,7 +5012,7 @@ emailSettingsForm?.addEventListener("submit", async (event) => {
       }),
     });
     applyEmailSettings(payload.emailSettings);
-    setEmailSettingsStatus("Email provider saved.", "success");
+    setEmailSettingsStatus("Optional email provider saved.", "success");
     await loadWorkspace();
     renderWorkspacePanels();
   } catch (error) {
@@ -3829,7 +5028,7 @@ sendTestEmailButton?.addEventListener("click", async () => {
         to: emailTestRecipient?.value.trim() || teacherProfile?.email || "",
       }),
     });
-    setEmailSettingsStatus(payload.message || "Test email sent.", "success");
+    setEmailSettingsStatus(payload.message || "Test email sent from the optional custom provider.", "success");
   } catch (error) {
     setEmailSettingsStatus(error.message, "error");
   }
@@ -3891,6 +5090,31 @@ navMenu?.addEventListener("click", (event) => {
   }
 });
 
+demoPrevButton?.addEventListener("click", () => {
+  demoAutoplay = false;
+  goToDemoScene(activeDemoSceneIndex - 1);
+});
+
+demoNextButton?.addEventListener("click", () => {
+  demoAutoplay = false;
+  goToDemoScene(activeDemoSceneIndex + 1);
+});
+
+demoPlayButton?.addEventListener("click", () => {
+  demoAutoplay = !demoAutoplay;
+  renderDemoPlayer();
+  scheduleDemoAutoplay();
+});
+
+demoProgressDots?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-demo-scene]");
+  if (!button) {
+    return;
+  }
+  demoAutoplay = false;
+  goToDemoScene(Number(button.dataset.demoScene));
+});
+
 document.addEventListener("click", (event) => {
   if (!navMenu || !navToggle || !navMenu.classList.contains("open")) {
     return;
@@ -3924,6 +5148,111 @@ document.addEventListener("click", (event) => {
         }, 1200);
       })
       .catch(() => {});
+    return;
+  }
+
+  const copyEditedVersionButton = event.target.closest("[data-assessment-copy-version]");
+  if (copyEditedVersionButton) {
+    const version = editableAssessmentState?.versions?.[Number(copyEditedVersionButton.dataset.assessmentCopyVersion)];
+    if (!version) {
+      return;
+    }
+    navigator.clipboard?.writeText(serializeAssessmentVersion(version)).catch(() => {});
+    copyEditedVersionButton.textContent = "Copied";
+    window.setTimeout(() => {
+      copyEditedVersionButton.textContent = "Copy Edited Version";
+    }, 1200);
+    return;
+  }
+
+  const versionTabButton = event.target.closest("[data-assessment-version-tab]");
+  if (versionTabButton) {
+    activeAssessmentPreviewIndex = Number(versionTabButton.dataset.assessmentVersionTab);
+    document.querySelectorAll("[data-assessment-version-tab]").forEach((button) => {
+      const isActive = Number(button.dataset.assessmentVersionTab) === activeAssessmentPreviewIndex;
+      button.classList.toggle("active", isActive);
+      button.setAttribute("aria-selected", isActive ? "true" : "false");
+    });
+    document.querySelectorAll("[data-assessment-version-panel]").forEach((panel) => {
+      panel.classList.toggle("active", Number(panel.dataset.assessmentVersionPanel) === activeAssessmentPreviewIndex);
+      panel.classList.toggle("is-hidden", Number(panel.dataset.assessmentVersionPanel) !== activeAssessmentPreviewIndex);
+    });
+    return;
+  }
+
+  const questionTabButton = event.target.closest("[data-assessment-question-tab]");
+  if (questionTabButton) {
+    activeAssessmentEditorPath = questionTabButton.dataset.assessmentQuestionTab || "";
+    rerenderEditableAssessmentCards();
+    return;
+  }
+
+  const downloadEditedVersionButton = event.target.closest("[data-assessment-download-version]");
+  if (downloadEditedVersionButton) {
+    const versionIndex = Number(downloadEditedVersionButton.dataset.assessmentDownloadVersion);
+    const version = editableAssessmentState?.versions?.[versionIndex];
+    if (!version) {
+      return;
+    }
+    const html = createHtmlDocument(
+      `${editableAssessmentState.context?.topic || "Assessment"} ${version.name || "Version"}`,
+      renderEditableAssessmentVersionBody(editableAssessmentState, version, false),
+    );
+    downloadStringAsFile(`${slugify(editableAssessmentState.title || version.name || "assessment")}-${slugify(version.name || "version")}-edited.html`, html, "text/html;charset=utf-8");
+    return;
+  }
+
+  const downloadEditedKeyButton = event.target.closest("[data-assessment-download-key]");
+  if (downloadEditedKeyButton) {
+    const versionIndex = Number(downloadEditedKeyButton.dataset.assessmentDownloadKey);
+    const version = editableAssessmentState?.versions?.[versionIndex];
+    if (!version) {
+      return;
+    }
+    const html = createHtmlDocument(
+      `${editableAssessmentState.context?.topic || "Assessment"} ${version.name || "Version"} Key`,
+      renderEditableAssessmentVersionBody(editableAssessmentState, version, true),
+    );
+    downloadStringAsFile(`${slugify(editableAssessmentState.title || version.name || "assessment")}-${slugify(version.name || "version")}-edited-key.html`, html, "text/html;charset=utf-8");
+    return;
+  }
+
+  const addQuestionButton = event.target.closest("[data-assessment-add-question]");
+  if (addQuestionButton) {
+    const [versionIndex, sectionIndex] = String(addQuestionButton.dataset.assessmentAddQuestion || "")
+      .split(":")
+      .map((value) => Number.parseInt(value, 10));
+    const version = editableAssessmentState?.versions?.[versionIndex];
+    const section = version?.sections?.[sectionIndex];
+    if (!section) {
+      return;
+    }
+    section.questions.push({
+      number: 0,
+      stem: "New question prompt",
+      body: [],
+      options: [],
+      points: 1,
+      responseLines: 3,
+      type: "short_answer",
+    });
+    renumberAssessmentVersion(version);
+    activeAssessmentEditorPath = `${versionIndex}:${sectionIndex}:${section.questions.length - 1}`;
+    pendingAssessmentScrollTarget = `${versionIndex}:${sectionIndex}:${section.questions.length - 1}`;
+    rerenderEditableAssessmentCards();
+    return;
+  }
+
+  const removeQuestionButton = event.target.closest("[data-assessment-remove-question]");
+  if (removeQuestionButton) {
+    const { version, section, questionIndex } = getEditableAssessmentQuestion(removeQuestionButton.dataset.assessmentRemoveQuestion);
+    if (!version || !section) {
+      return;
+    }
+    section.questions.splice(questionIndex, 1);
+    renumberAssessmentVersion(version);
+    activeAssessmentEditorPath = section.questions.length ? `${versionIndex}:${sectionIndex}:${Math.max(0, questionIndex - 1)}` : "";
+    rerenderEditableAssessmentCards();
     return;
   }
 
@@ -4000,6 +5329,51 @@ document.addEventListener("click", (event) => {
   }
 });
 
+document.addEventListener("input", (event) => {
+  const stemEditor = event.target.closest("[data-assessment-stem]");
+  if (stemEditor) {
+    const { question } = getEditableAssessmentQuestion(stemEditor.dataset.assessmentStem);
+    if (!question) {
+      return;
+    }
+    question.stem = stemEditor.value;
+    const preview = document.querySelector(`[data-assessment-live-preview="${CSS.escape(stemEditor.dataset.assessmentStem)}"]`);
+    if (preview) {
+      preview.innerHTML = formatDisplayMathHtml(serializeAssessmentQuestion(question));
+      hydrateInteractiveMath(preview);
+    }
+    return;
+  }
+
+  const bodyEditor = event.target.closest("[data-assessment-body]");
+  if (bodyEditor) {
+    const { question } = getEditableAssessmentQuestion(bodyEditor.dataset.assessmentBody);
+    if (!question) {
+      return;
+    }
+    question.body = bodyEditor.value
+      .split("\n")
+      .map((line) => line.trimEnd())
+      .filter((line) => line.length);
+    const preview = document.querySelector(`[data-assessment-live-preview="${CSS.escape(bodyEditor.dataset.assessmentBody)}"]`);
+    if (preview) {
+      preview.innerHTML = formatDisplayMathHtml(serializeAssessmentQuestion(question));
+      hydrateInteractiveMath(preview);
+    }
+    return;
+  }
+
+  const pointsEditor = event.target.closest("[data-assessment-points]");
+  if (pointsEditor) {
+    const { section, question } = getEditableAssessmentQuestion(pointsEditor.dataset.assessmentPoints);
+    if (!section || !question) {
+      return;
+    }
+    question.points = Math.max(1, Math.min(20, Number.parseInt(pointsEditor.value, 10) || 1));
+    section.totalPoints = (section.questions || []).reduce((sum, item) => sum + (Number(item.points) || 0), 0);
+  }
+});
+
 clearHistoryButton?.addEventListener("click", () => {
   clearWorkspaceScope("history").catch(() => {});
 });
@@ -4015,6 +5389,43 @@ clearAlertsButton?.addEventListener("click", () => {
 classIntelSelect?.addEventListener("change", () => {
   selectedInsightsClass = classIntelSelect.value;
   renderClassSummary();
+});
+
+insightStudentSelect?.addEventListener("change", () => {
+  const classes = getScoredStudents().filter((student) => student.class_name === selectedInsightsClass);
+  const avgQuiz = Math.round(classes.reduce((sum, student) => sum + student.recent_quiz_avg, 0) / Math.max(classes.length, 1));
+  const avgTest = Math.round(classes.reduce((sum, student) => sum + student.recent_test_avg, 0) / Math.max(classes.length, 1));
+  const avgAttendance = Math.round(classes.reduce((sum, student) => sum + student.attendance_percent, 0) / Math.max(classes.length, 1));
+  const avgMissing = (classes.reduce((sum, student) => sum + student.missing_assignments, 0) / Math.max(classes.length, 1)).toFixed(1);
+  const outlook = classes.map((student) => {
+    const baseline = student.recent_test_avg * 0.5 + student.recent_quiz_avg * 0.3 + student.attendance_percent * 0.2;
+    const missingPenalty = student.missing_assignments * 2.8 + student.late_submissions * 1.1;
+    const trendAdjustment = student.score_trend === "up" ? 4 : student.score_trend === "down" ? -6 : 0;
+    const participationAdjustment = (student.participation_score - 3) * 2;
+    return Math.max(42, Math.min(99, Math.round(baseline - missingPenalty + trendAdjustment + participationAdjustment)));
+  });
+  renderInsightsDashboard(selectedInsightsClass, classes, {
+    avgQuiz,
+    avgTest,
+    avgAttendance,
+    avgMissing,
+    classPrediction: Math.round(outlook.reduce((sum, value) => sum + value, 0) / Math.max(outlook.length, 1)),
+    likelyReteach: "",
+  });
+});
+
+insightSaveNotesButton?.addEventListener("click", () => {
+  const studentId = insightStudentSelect?.value;
+  if (!studentId) {
+    return;
+  }
+  const notes = getTeacherFlowNotes();
+  notes[studentId] = insightStudentNotes?.value.trim() || "";
+  setTeacherFlowNotes(notes);
+  if (insightNotesStatus) {
+    const student = students.find((item) => item.student_id === studentId);
+    insightNotesStatus.textContent = `Saved notes for ${student?.student_name || "student"}.`;
+  }
 });
 
 rosterClassSelect?.addEventListener("change", () => {
@@ -4084,6 +5495,8 @@ csvUpload?.addEventListener("change", async (event) => {
 
 async function initializeApp() {
   createSampleDownload();
+  renderDemoPlayer();
+  scheduleDemoAutoplay();
   consumeAuthFlash();
   showAuthMode("signin");
   setActiveFilterChip(state.filter);
@@ -4108,6 +5521,7 @@ async function initializeApp() {
   sessionReady = true;
   applyAuthState();
   renderAll();
+  hydrateInteractiveMath(document.body);
 }
 
 initializeApp();

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#1f7a5a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -16,19 +16,36 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;600&display=swap"
       rel="stylesheet"
     />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]],
+          displayMath: [["\\[", "\\]"], ["$$", "$$"]],
+        },
+        startup: {
+          typeset: false,
+        },
+      };
+      window.TEACHERFLOW_DESMOS_KEY = window.TEACHERFLOW_DESMOS_KEY || "dcb31709b452b1cf9dc26972add0fda6";
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script defer src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body data-page="home">
-    <div id="auth-shell" class="auth-shell">
+    <div id="auth-shell" class="auth-shell landing-auth-shell">
       <section class="auth-card">
         <div class="auth-copy">
           <p class="eyebrow">TeacherFlowAI Access</p>
-          <h1>AI workflow software for actual school operations.</h1>
+          <h1>Plan lessons, support students, and organize your teaching day.</h1>
           <p class="hero-text">
-            Sign in with your work email or Google Workspace. TeacherFlowAI now uses
-            separate product pages so planning, support, communication, and settings feel
-            like a real app instead of one long demo.
+            Open a teacher workspace that helps turn one lesson idea into classroom-ready materials, follow-up actions, and saved work you can come back to.
           </p>
+          <div class="hero-actions">
+            <button id="try-demo-button" class="primary-button" type="button">Try Demo</button>
+            <a class="secondary-button" href="#demo-video">Watch Demo</a>
+          </div>
+          <p class="microcopy">Demo mode opens a preloaded teacher account with sample students, support flags, and saved outputs.</p>
         </div>
         <div class="auth-panel">
           <div class="auth-toggle">
@@ -40,6 +57,7 @@
             <label>Work Email<input name="email" type="email" placeholder="teacher@school.org" required /></label>
             <label>Password<input name="password" type="password" placeholder="Enter your password" required /></label>
             <button class="primary-button" type="submit">Sign In</button>
+            <button id="try-demo-inline-button" class="secondary-button" type="button">Try Demo Without Sign Up</button>
             <button id="google-sign-in-button" class="secondary-button" type="button">Continue With Google Workspace</button>
           </form>
           <form id="create-account-form" class="stack auth-stack is-hidden">
@@ -52,6 +70,7 @@
           </form>
           <form id="reset-request-form" class="stack auth-stack is-hidden">
             <label>Work Email<input name="email" type="email" placeholder="teacher@school.org" required /></label>
+            <p class="microcopy">TeacherFlowAI sends the reset email directly. You do not need to set up an email provider in Settings.</p>
             <button class="primary-button" type="submit">Send Reset Email</button>
           </form>
           <form id="reset-confirm-form" class="stack auth-stack is-hidden">
@@ -90,15 +109,30 @@
         <div class="hero-grid">
           <section class="hero-copy">
             <p class="eyebrow">Teacher Workflow OS</p>
-            <h1>Clean, modular, buyable teacher software.</h1>
+            <h1>Teachers enter one idea and walk away with real classroom materials.</h1>
             <p class="hero-text">
-              Use separate workspaces for lesson creation, repurposing, student support,
-              class insight, and account management. The product is now easier to scan on
-              desktop and easier to use on a phone.
+              TeacherFlowAI turns lesson topics into slides, guided practice, independent work, homework, exit tickets, substitute coverage materials, and student-support follow-up. Start with the demo workspace to see how it works with sample classes and students.
             </p>
-            <div class="hero-actions">
-              <a class="primary-button" href="./planning.html">Open Planning</a>
-              <a class="secondary-button" href="./support.html">Open Student Support</a>
+            <div class="hero-actions landing-only">
+              <button id="hero-demo-button" class="primary-button" type="button">Try Demo</button>
+              <a class="secondary-button" href="#demo-video">Watch Demo Video</a>
+            </div>
+            <div class="hero-pill-row landing-only">
+              <span class="hero-pill">Slides + Student Tasks</span>
+              <span class="hero-pill">Sub Plan Ready</span>
+              <span class="hero-pill">Support Dashboard</span>
+            </div>
+            <div class="hero-story-grid landing-only">
+              <article class="hero-story-card hero-story-planning">
+                <span class="metric-label">Planning</span>
+                <h3>Build a teaching pack in one move</h3>
+                <p>Generate the slides, classwork, homework, exit ticket, and teacher key in one pass.</p>
+              </article>
+              <article class="hero-story-card hero-story-support">
+                <span class="metric-label">Support</span>
+                <h3>See who needs help next</h3>
+                <p>Open a believable support dashboard with intervention priorities and outreach-ready students.</p>
+              </article>
             </div>
           </section>
           <aside class="hero-panel">
@@ -112,25 +146,86 @@
               <strong id="high-priority-count">0</strong>
               <p>Explainable risk scoring with reasons, outreach, and follow-up tools.</p>
             </div>
+            <div class="metric-card feature-spotlight-card">
+              <span class="metric-label">Fast Start</span>
+              <strong>Try Demo</strong>
+              <p>Open the seeded workspace, generate one teaching pack, then review the support dashboard and intervention queue.</p>
+            </div>
           </aside>
         </div>
       </header>
 
       <main>
+        <section id="demo-video" class="panel demo-video-panel">
+          <div class="panel-head">
+            <h3>Demo Walkthrough</h3>
+            <p>Built-in walkthrough for teachers who want to see the planning, assessment, and student-support flow before creating an account.</p>
+          </div>
+          <div class="demo-topline landing-only">
+            <span class="hero-pill">Teacher-first planning</span>
+            <span class="hero-pill">No signup required</span>
+            <span class="hero-pill">Ready-to-try demo flow</span>
+          </div>
+          <div class="demo-video-grid">
+            <div class="demo-video-frame demo-player">
+              <div class="demo-player-top">
+                <span class="metric-label">Auto Demo</span>
+              </div>
+              <div class="demo-player-screen">
+                <div class="demo-screen-shell">
+                  <div class="demo-screen-header">
+                    <span id="demo-screen-kicker" class="metric-label">Step 1</span>
+                    <span id="demo-screen-module" class="queue-badge">Planning</span>
+                  </div>
+                  <h4 id="demo-screen-title">Open the demo workspace instantly</h4>
+                  <p id="demo-screen-copy">Teachers can explore the app without creating an account first.</p>
+                  <div id="demo-screen-highlights" class="demo-screen-highlights"></div>
+                </div>
+              </div>
+              <div class="demo-player-footer">
+                <div class="demo-player-controls">
+                  <button id="demo-prev-button" class="ghost-button demo-control-button" type="button">Back</button>
+                  <button id="demo-play-button" class="ghost-button demo-control-button" type="button">Pause</button>
+                  <button id="demo-next-button" class="ghost-button demo-control-button" type="button">Next</button>
+                </div>
+              </div>
+              <div id="demo-progress-dots" class="demo-progress-dots" aria-label="Demo progress"></div>
+            </div>
+            <div class="demo-video-notes demo-script-stack">
+              <article class="output-card compact-output-card">
+                <h4 id="demo-script-title">Step 1 Script</h4>
+                <p id="demo-script-copy">Click <strong>Try Demo</strong> to enter a seeded teacher workspace instead of starting from a blank account.</p>
+              </article>
+              <article class="output-card compact-output-card">
+                <h4>Best Demo Flow</h4>
+                <p>Try Demo → Planning workspace → Python for loops teaching pack → support dashboard → intervention queue.</p>
+              </article>
+              <article class="output-card compact-output-card">
+                <h4>Demo Credentials</h4>
+                <p>No signup required. Use the <strong>Try Demo</strong> button to open the seeded workspace instantly.</p>
+              </article>
+              <article class="output-card compact-output-card">
+                <h4>Pitch Reminder</h4>
+                <p>Lead with saved teacher time, then show one polished lesson flow and one believable support dashboard.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
         <section class="modules-strip">
-          <a class="module-card module-link-card" href="./planning.html">
+          <a class="module-card module-link-card module-planning-card" href="./planning.html">
             <h3>Planning Workspace</h3>
             <p>Generate a teaching pack once, then repurpose existing resources into classroom-ready formats.</p>
           </a>
-          <a class="module-card module-link-card" href="./support.html">
+          <a class="module-card module-link-card module-support-card" href="./support.html">
             <h3>Student Support</h3>
             <p>Review support levels, flag reasons, intervention steps, outreach drafts, and summaries.</p>
           </a>
-          <a class="module-card module-link-card" href="./insights.html">
+          <a class="module-card module-link-card module-insights-card" href="./insights.html">
             <h3>Class Insights</h3>
             <p>See class-level trends, likely reteach needs, outreach priorities, and admin-ready lesson outputs.</p>
           </a>
-          <a class="module-card module-link-card" href="./settings.html">
+          <a class="module-card module-link-card module-settings-card" href="./settings.html">
             <h3>Settings And History</h3>
             <p>Manage your profile, saved work, communications, alerts, and class-by-class rosters.</p>
           </a>

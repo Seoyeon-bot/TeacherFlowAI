@@ -3,7 +3,7 @@
   "appName": "TeacherFlowAI",
   "webDir": "mobile-shell",
   "server": {
-    "url": "https://teacherflowai.example.com",
+    "url": "https://teacherflowai.onrender.com",
     "cleartext": false
   },
   "plugins": {

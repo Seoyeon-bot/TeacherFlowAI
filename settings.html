@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#1f7a5a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -16,6 +16,20 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;600&display=swap"
       rel="stylesheet"
     />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]],
+          displayMath: [["\\[", "\\]"], ["$$", "$$"]],
+        },
+        startup: {
+          typeset: false,
+        },
+      };
+      window.TEACHERFLOW_DESMOS_KEY = window.TEACHERFLOW_DESMOS_KEY || "dcb31709b452b1cf9dc26972add0fda6";
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script defer src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body data-page="settings">
@@ -54,7 +68,7 @@
             </div>
             <div id="settings-tabs" class="settings-tabs" aria-label="Settings tabs">
               <button class="settings-tab active" type="button" data-settings-tab="profile">Profile</button>
-              <button class="settings-tab" type="button" data-settings-tab="email">Email Provider</button>
+              <button class="settings-tab" type="button" data-settings-tab="email">Advanced Email</button>
               <button class="settings-tab" type="button" data-settings-tab="history">Saved Work</button>
               <button class="settings-tab" type="button" data-settings-tab="communications">Communications</button>
               <button class="settings-tab" type="button" data-settings-tab="alerts">Alerts</button>
@@ -85,11 +99,11 @@
 
           <section class="panel settings-panel" id="settings-panel-email">
             <div class="panel-head">
-              <h3>Email Provider</h3>
-              <p>Save your work email delivery settings here so password reset and future mail actions can send through your school account.</p>
+              <h3>Advanced Email Delivery</h3>
+              <p>This section is optional. TeacherFlowAI password reset and standard test email can use the app sender directly, so most teachers should not need to configure custom SMTP here.</p>
             </div>
             <div class="panel-callout">
-              For Google Workspace or Gmail SMTP, use <code>smtp.gmail.com</code>, port <code>587</code>, and an app password or valid SMTP credential.
+              Most teachers can skip this. Only use it if you specifically want to send from your own email account instead of the TeacherFlowAI default sender. For Google Workspace or Gmail SMTP, use <code>smtp.gmail.com</code>, port <code>587</code>, and an app password or valid SMTP credential.
             </div>
             <form id="email-settings-form" class="stack">
               <div class="field-grid">
@@ -106,18 +120,33 @@
                 <label>Sender Address<input id="email-from-address" name="fromAddress" type="email" placeholder="teacher@school.org" /></label>
               </div>
               <div class="field-grid">
-                <label>SMTP Username<input id="email-username" name="username" type="email" placeholder="teacher@school.org" required /></label>
-                <label>SMTP Password<input id="email-password" name="password" type="password" placeholder="App password or SMTP password" /></label>
+                <label>
+                  SMTP Username
+                  <input id="email-username" name="username" type="email" placeholder="teacher@school.org" required />
+                  <span class="microcopy">Using signed-in teacher email automatically when available.</span>
+                </label>
+                <label>
+                  SMTP Password
+                  <input id="email-password" name="password" type="password" placeholder="App password or SMTP password" />
+                  <span class="microcopy smtp-help">
+                    This is <strong>not</strong> your TeacherFlowAI password. For Gmail or Google Workspace, use a Google
+                    <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer">App Password</a>
+                    after turning on
+                    <a href="https://myaccount.google.com/security" target="_blank" rel="noopener noreferrer">2-Step Verification</a>.
+                  </span>
+                </label>
               </div>
+              <div class="microcopy">Sender Address also uses the signed-in teacher email automatically unless you change it.</div>
               <div class="toolbar-row compact-toolbar">
-                <button class="primary-button" type="submit">Save Email Provider</button>
+                <button class="primary-button" type="submit">Save Optional Email Provider</button>
               </div>
             </form>
             <div id="email-settings-status" class="status-message" aria-live="polite"></div>
             <div class="stack email-test-stack">
               <label>Send Test Email<input id="email-test-recipient" type="email" placeholder="teacher@school.org" /></label>
+              <div class="microcopy">If no custom SMTP is saved, TeacherFlowAI will try the default app sender.</div>
               <div class="toolbar-row compact-toolbar">
-                <button id="send-test-email-button" class="secondary-button" type="button">Send Test Email</button>
+                <button id="send-test-email-button" class="secondary-button" type="button">Send Test Email Quickly</button>
               </div>
             </div>
           </section>

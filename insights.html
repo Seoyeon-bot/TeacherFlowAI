@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#1f7a5a" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -16,6 +16,21 @@
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;600&display=swap"
       rel="stylesheet"
     />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]],
+          displayMath: [["\\[", "\\]"], ["$$", "$$"]],
+        },
+        startup: {
+          typeset: false,
+        },
+      };
+      window.TEACHERFLOW_DESMOS_KEY = window.TEACHERFLOW_DESMOS_KEY || "dcb31709b452b1cf9dc26972add0fda6";
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script defer src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body data-page="insights">
@@ -49,11 +64,126 @@
         <section class="panel">
           <div class="panel-head">
             <h3>Class Summary Intelligence</h3>
-            <p>See who is trending down, who improved, likely reteach needs, outreach priorities, and next-class actions.</p>
+            <p>See current student progress, class-level patterns, weak-topic alerts, and an upcoming assessment outlook.</p>
           </div>
           <div class="field-grid">
             <label>Select Class<select id="class-intel-select"></select></label>
           </div>
+        </section>
+        <section class="panel insights-stats-panel">
+          <div class="insight-stat-grid">
+            <article class="insight-stat-card">
+              <span class="metric-label">Students</span>
+              <strong id="insight-student-count">0</strong>
+            </article>
+            <article class="insight-stat-card">
+              <span class="metric-label">Class Avg</span>
+              <strong id="insight-class-average">0%</strong>
+            </article>
+            <article class="insight-stat-card">
+              <span class="metric-label">Weak Topics</span>
+              <strong id="insight-weak-topic-count">0</strong>
+            </article>
+            <article class="insight-stat-card">
+              <span class="metric-label">Upcoming Avg</span>
+              <strong id="insight-prediction-average">0%</strong>
+            </article>
+          </div>
+        </section>
+        <section class="panel insights-legend-panel">
+          <div class="panel-head">
+            <div>
+              <h3>How TeacherFlowAI Reads These Scores</h3>
+              <p>Use this guide so teachers know what each label means before acting on the dashboard.</p>
+            </div>
+          </div>
+          <div class="insight-legend-grid">
+            <article class="insight-legend-card">
+              <h4>Student Topic Labels</h4>
+              <ul>
+                <li><strong>On Track</strong>: 70% or higher on that topic.</li>
+                <li><strong>Below Target</strong>: below 70% on that topic.</li>
+              </ul>
+            </article>
+            <article class="insight-legend-card">
+              <h4>Color Ranges</h4>
+              <ul>
+                <li><strong>Green</strong>: 75% and above.</li>
+                <li><strong>Yellow</strong>: 60% to 74%.</li>
+                <li><strong>Red</strong>: below 60%.</li>
+              </ul>
+            </article>
+            <article class="insight-legend-card">
+              <h4>Class Status Pills</h4>
+              <ul>
+                <li><strong>Healthy</strong>: above 75% class average.</li>
+                <li><strong>Watch</strong>: 60% to 75% class average.</li>
+                <li><strong>Urgent</strong>: below 60% class average.</li>
+              </ul>
+            </article>
+            <article class="insight-legend-card">
+              <h4>Weak Topic Alerts</h4>
+              <ul>
+                <li>An alert appears when <strong>more than 40%</strong> of students are below 70% on the same topic.</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+        <section class="panel insights-dashboard-panel">
+          <div class="panel-head">
+            <div>
+              <h3>Individual Student View</h3>
+              <p>Pick one student to review topic scores, predicted readiness, and teacher notes. On Track means 70%+, and Below Target means below 70%.</p>
+            </div>
+          </div>
+          <div class="insights-student-layout">
+            <div class="insights-student-sidebar">
+              <label>Select Student<select id="insight-student-select"></select></label>
+              <div id="insight-student-average-card" class="student-score-item">
+                <div>
+                  <strong>Current Average</strong>
+                  <div class="microcopy">Across tracked topic scores</div>
+                </div>
+                <span id="insight-student-average-value" class="score-badge score-good">0%</span>
+              </div>
+              <div id="insight-student-score-list" class="student-score-list"></div>
+              <label>
+                Teacher Notes
+                <textarea id="insight-student-notes" placeholder="Save personal notes for this student."></textarea>
+              </label>
+              <div class="resource-actions">
+                <button id="insight-save-notes-button" class="secondary-button" type="button">Save Student Notes</button>
+              </div>
+              <div id="insight-notes-status" class="microcopy"></div>
+            </div>
+            <div class="chart-shell">
+              <canvas id="insight-student-chart"></canvas>
+            </div>
+          </div>
+        </section>
+        <section class="panel insights-dashboard-panel">
+          <div class="panel-head">
+            <div>
+              <h3>Overall Class View</h3>
+              <p>Track class averages by topic and the overall performance trend. Healthy is above 75%, Watch is 60% to 75%, and Urgent is below 60%.</p>
+            </div>
+          </div>
+          <div class="insights-class-layout">
+            <div id="insight-class-average-table" class="resource-preview"></div>
+            <div class="chart-shell">
+              <canvas id="insight-class-chart"></canvas>
+            </div>
+          </div>
+        </section>
+        <section class="panel insights-dashboard-panel">
+          <div class="panel-head">
+            <div>
+              <h3>Weak Topic Alerts + Recommendations</h3>
+              <p>Any indicator where more than 40% of the class is below 70% is flagged automatically.</p>
+            </div>
+          </div>
+          <div id="insight-alert-list" class="alert-list"></div>
+          <div id="insight-recommendation-list" class="recommendation-list"></div>
         </section>
         <div id="class-intel-output" class="output-grid"></div>
 

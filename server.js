@@ -29,6 +29,8 @@ const MAIL_FROM = process.env.MAIL_FROM || "";
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || "";
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || "";
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
+const OPENAI_IMPORT_MODEL = process.env.OPENAI_IMPORT_MODEL || "gpt-4.1-mini";
 const SESSION_COOKIE = "teacherflowai_session";
 const OAUTH_COOKIE = "teacherflowai_oauth_state";
 const sessions = new Map();
@@ -48,7 +50,7 @@ const REQUIRED_HEADERS = [
   "last_intervention_days_ago",
   "teacher_notes",
 ];
-const OPTIONAL_HEADERS = ["advisor_email", "parent_email"];
+const OPTIONAL_HEADERS = ["advisor_email", "parent_email", "topic_history"];
 const KNOWN_SECTION_NAMES = [
   "warm-up",
   "warm up",
@@ -64,6 +66,268 @@ const KNOWN_SECTION_NAMES = [
   "multiple choice",
   "short answer",
   "coding",
+];
+const DEMO_USER_EMAIL = "demo@teacherflowai.app";
+const DEMO_USER_NAME = "TeacherFlowAI Demo";
+const DEMO_USER_PASSWORD = "demo-access-only";
+const DEMO_STUDENTS = [
+  {
+    student_id: "D-1001",
+    student_name: "Mina Patel",
+    grade_level: "10",
+    class_name: "Algebra II",
+    attendance_percent: 84,
+    missing_assignments: 5,
+    late_submissions: 4,
+    participation_score: 2,
+    behavior_concern: "medium",
+    recent_quiz_avg: 68,
+    recent_test_avg: 64,
+    score_trend: "down",
+    last_intervention_days_ago: 41,
+    teacher_notes: "Needs a tighter reteach plan and quick family contact before the next checkpoint.",
+    advisor_email: "advisor.mina@school.org",
+    parent_email: "family.mina@example.com",
+  },
+  {
+    student_id: "D-1002",
+    student_name: "Jordan Lee",
+    grade_level: "11",
+    class_name: "AP Computer Science",
+    attendance_percent: 98,
+    missing_assignments: 0,
+    late_submissions: 1,
+    participation_score: 4,
+    behavior_concern: "low",
+    recent_quiz_avg: 92,
+    recent_test_avg: 90,
+    score_trend: "up",
+    last_intervention_days_ago: 7,
+    teacher_notes: "Doing well. Good candidate for extension challenges.",
+    advisor_email: "advisor.jordan@school.org",
+    parent_email: "",
+  },
+  {
+    student_id: "D-1003",
+    student_name: "Sofia Ramirez",
+    grade_level: "9",
+    class_name: "Biology",
+    attendance_percent: 88,
+    missing_assignments: 2,
+    late_submissions: 3,
+    participation_score: 3,
+    behavior_concern: "medium",
+    recent_quiz_avg: 77,
+    recent_test_avg: 74,
+    score_trend: "down",
+    last_intervention_days_ago: 29,
+    teacher_notes: "Confidence drops during lab write-ups. Needs guided writing supports.",
+    advisor_email: "advisor.sofia@school.org",
+    parent_email: "family.sofia@example.com",
+  },
+  {
+    student_id: "D-1004",
+    student_name: "Elijah Brooks",
+    grade_level: "10",
+    class_name: "Geometry",
+    attendance_percent: 79,
+    missing_assignments: 6,
+    late_submissions: 5,
+    participation_score: 2,
+    behavior_concern: "high",
+    recent_quiz_avg: 61,
+    recent_test_avg: 58,
+    score_trend: "down",
+    last_intervention_days_ago: 53,
+    teacher_notes: "Urgent intervention candidate. Missing work and assessment gaps are stacking.",
+    advisor_email: "advisor.elijah@school.org",
+    parent_email: "family.elijah@example.com",
+  },
+  {
+    student_id: "D-1005",
+    student_name: "Ava Chen",
+    grade_level: "11",
+    class_name: "AP English",
+    attendance_percent: 95,
+    missing_assignments: 1,
+    late_submissions: 0,
+    participation_score: 5,
+    behavior_concern: "low",
+    recent_quiz_avg: 94,
+    recent_test_avg: 91,
+    score_trend: "flat",
+    last_intervention_days_ago: 10,
+    teacher_notes: "Consistent. Can lead peer discussion groups.",
+    advisor_email: "advisor.ava@school.org",
+    parent_email: "",
+  },
+  {
+    student_id: "D-1006",
+    student_name: "Noah Williams",
+    grade_level: "9",
+    class_name: "World History",
+    attendance_percent: 86,
+    missing_assignments: 3,
+    late_submissions: 2,
+    participation_score: 3,
+    behavior_concern: "medium",
+    recent_quiz_avg: 72,
+    recent_test_avg: 70,
+    score_trend: "flat",
+    last_intervention_days_ago: 24,
+    teacher_notes: "Needs shorter chunked reading tasks and clearer note supports.",
+    advisor_email: "advisor.noah@school.org",
+    parent_email: "family.noah@example.com",
+  },
+  {
+    student_id: "D-1007",
+    student_name: "Isabella Nguyen",
+    grade_level: "12",
+    class_name: "Precalculus",
+    attendance_percent: 93,
+    missing_assignments: 2,
+    late_submissions: 2,
+    participation_score: 4,
+    behavior_concern: "low",
+    recent_quiz_avg: 81,
+    recent_test_avg: 78,
+    score_trend: "flat",
+    last_intervention_days_ago: 18,
+    teacher_notes: "Borderline moderate support. Watch for test anxiety before the next unit check.",
+    advisor_email: "advisor.isabella@school.org",
+    parent_email: "",
+  },
+  {
+    student_id: "D-1008",
+    student_name: "Lucas Garcia",
+    grade_level: "10",
+    class_name: "Chemistry",
+    attendance_percent: 90,
+    missing_assignments: 4,
+    late_submissions: 1,
+    participation_score: 2,
+    behavior_concern: "medium",
+    recent_quiz_avg: 69,
+    recent_test_avg: 71,
+    score_trend: "down",
+    last_intervention_days_ago: 36,
+    teacher_notes: "Needs a small-group reteach on balancing and practice tracking.",
+    advisor_email: "advisor.lucas@school.org",
+    parent_email: "family.lucas@example.com",
+  },
+  {
+    student_id: "D-1009",
+    student_name: "Emma Johnson",
+    grade_level: "11",
+    class_name: "US History",
+    attendance_percent: 97,
+    missing_assignments: 0,
+    late_submissions: 0,
+    participation_score: 5,
+    behavior_concern: "low",
+    recent_quiz_avg: 89,
+    recent_test_avg: 93,
+    score_trend: "up",
+    last_intervention_days_ago: 8,
+    teacher_notes: "Strong and steady. Good example of on-track performance.",
+    advisor_email: "advisor.emma@school.org",
+    parent_email: "",
+  },
+  {
+    student_id: "D-1010",
+    student_name: "Mason Turner",
+    grade_level: "9",
+    class_name: "Earth Science",
+    attendance_percent: 82,
+    missing_assignments: 5,
+    late_submissions: 4,
+    participation_score: 2,
+    behavior_concern: "high",
+    recent_quiz_avg: 63,
+    recent_test_avg: 60,
+    score_trend: "down",
+    last_intervention_days_ago: 47,
+    teacher_notes: "Another high-priority student for outreach and weekly progress monitoring.",
+    advisor_email: "advisor.mason@school.org",
+    parent_email: "family.mason@example.com",
+  },
+  {
+    student_id: "D-1011",
+    student_name: "Grace Kim",
+    grade_level: "12",
+    class_name: "AP Statistics",
+    attendance_percent: 94,
+    missing_assignments: 1,
+    late_submissions: 1,
+    participation_score: 4,
+    behavior_concern: "low",
+    recent_quiz_avg: 85,
+    recent_test_avg: 82,
+    score_trend: "flat",
+    last_intervention_days_ago: 14,
+    teacher_notes: "Near proficiency. Good target for a quick misconception conference.",
+    advisor_email: "advisor.grace@school.org",
+    parent_email: "",
+  },
+  {
+    student_id: "D-1012",
+    student_name: "Daniel Rivera",
+    grade_level: "10",
+    class_name: "Spanish II",
+    attendance_percent: 89,
+    missing_assignments: 2,
+    late_submissions: 3,
+    participation_score: 3,
+    behavior_concern: "medium",
+    recent_quiz_avg: 76,
+    recent_test_avg: 73,
+    score_trend: "flat",
+    last_intervention_days_ago: 21,
+    teacher_notes: "Moderate support. Needs structured speaking practice and vocabulary review.",
+    advisor_email: "advisor.daniel@school.org",
+    parent_email: "family.daniel@example.com",
+  },
+];
+const DEMO_ACTIVITIES = [
+  {
+    id: "demo-activity-1",
+    createdAt: "2026-04-22T08:15:00.000Z",
+    type: "teaching_pack",
+    title: "Generated Python for Loops teaching pack",
+    description: "Built slides, guided practice, classwork, homework, and an exit ticket for AP Computer Science.",
+    className: "AP Computer Science",
+    status: "generated",
+  },
+  {
+    id: "demo-activity-2",
+    createdAt: "2026-04-22T08:26:00.000Z",
+    type: "repurpose",
+    title: "Created Version A and Version B quiz",
+    description: "Parallel assessment versions were generated from a typed quiz upload.",
+    className: "AP Computer Science",
+    status: "generated",
+  },
+  {
+    id: "demo-activity-3",
+    createdAt: "2026-04-22T08:40:00.000Z",
+    type: "email_draft",
+    title: "Drafted outreach for Elijah Brooks",
+    description: "Prepared a family update draft around missing work and declining math assessment scores.",
+    studentId: "D-1004",
+    studentName: "Elijah Brooks",
+    className: "Geometry",
+    status: "drafted",
+  },
+  {
+    id: "demo-activity-4",
+    createdAt: "2026-04-22T08:48:00.000Z",
+    type: "alert",
+    title: "Check Mina Patel after reteach block",
+    description: "Review warm-up accuracy and assignment completion before Friday.",
+    dueDate: "2026-04-25",
+    dueTime: "08:00",
+    status: "open",
+  },
 ];
 
 ensureDataStore();
@@ -568,6 +832,53 @@ function getEncryptedEmailSettings(settings = {}) {
   };
 }
 
+function getDemoUserRecord() {
+  return {
+    id: "teacherflowai-demo-user",
+    email: DEMO_USER_EMAIL,
+    name: DEMO_USER_NAME,
+    school: "TeacherFlowAI Demo School",
+    title: "Demo Teacher",
+    department: "Innovation Lab",
+    phone: "",
+    preferredView: "auto",
+    emailSettings: getEncryptedEmailSettings(getDefaultEmailSettings()),
+    passwordHash: hashPassword(DEMO_USER_PASSWORD, "teacherflowai-demo-salt"),
+    passwordReset: null,
+    authProvider: "demo",
+    createdAt: "2026-04-22T08:00:00.000Z",
+  };
+}
+
+function getDemoStudents() {
+  return DEMO_STUDENTS.map((student) => ({ ...student }));
+}
+
+function getDemoActivities() {
+  return DEMO_ACTIVITIES.map((activity) => ({ ...activity }));
+}
+
+async function ensureDemoWorkspace() {
+  const users = await readUsers();
+  let user = users.find((candidate) => candidate.email === DEMO_USER_EMAIL);
+  if (!user) {
+    user = getDemoUserRecord();
+    users.push(user);
+  } else {
+    user = {
+      ...user,
+      ...getDemoUserRecord(),
+      passwordHash: user.passwordHash || getDemoUserRecord().passwordHash,
+    };
+    const index = users.findIndex((candidate) => candidate.id === user.id);
+    users[index] = user;
+  }
+  await writeUsers(users);
+  await setUserStudents(user.id, getDemoStudents());
+  await setUserActivities(user.id, getDemoActivities());
+  return user;
+}
+
 function normalizeEmailSettingsInput(input = {}, existing = {}) {
   const current = {
     ...getDefaultEmailSettings(),
@@ -635,6 +946,93 @@ function normalizeTrend(value) {
   return ["up", "flat", "down"].includes(normalized) ? normalized : "flat";
 }
 
+function normalizeTopicName(value) {
+  return String(value || "").trim();
+}
+
+function normalizeDateToken(value, fallback = "") {
+  const token = String(value || "").trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(token)) {
+    return token;
+  }
+  const date = new Date(token);
+  if (Number.isNaN(date.getTime())) {
+    return fallback;
+  }
+  return date.toISOString().slice(0, 10);
+}
+
+function normalizeTopicAssessmentType(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  return ["quiz", "test", "classwork", "homework", "exit ticket", "project"].includes(normalized) ? normalized : "quiz";
+}
+
+function parseTopicHistoryValue(value) {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  const text = String(value || "").trim();
+  if (!text) {
+    return [];
+  }
+  try {
+    const parsed = JSON.parse(text);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return text
+      .split(/\s*\|\s*/)
+      .map((entry) => {
+        const [topic, score, assessedOn = "", type = "quiz"] = entry.split(/\s*::\s*/);
+        return { topic, score, assessed_on: assessedOn, type };
+      })
+      .filter((entry) => normalizeTopicName(entry.topic));
+  }
+}
+
+function normalizeTopicHistoryEntry(entry, index = 0) {
+  const assessedOn = normalizeDateToken(entry.assessed_on || entry.date || entry.assessedOn || "", `2026-04-${String(Math.min(index + 1, 28)).padStart(2, "0")}`);
+  return {
+    topic: normalizeTopicName(entry.topic || entry.name || entry.label || `Topic ${index + 1}`),
+    score: clampNumber(entry.score, 0, 100, 0),
+    assessed_on: assessedOn,
+    type: normalizeTopicAssessmentType(entry.type),
+  };
+}
+
+function inferTopicHistoryFromSummary(student) {
+  const className = String(student.class_name || "").toLowerCase();
+  const topicSets = [
+    { test: /algebra/, topics: ["Linear Equations", "Exponents", "Factoring", "Quadratics"] },
+    { test: /geometry/, topics: ["Angles", "Triangles", "Similarity", "Proofs"] },
+    { test: /statistics/, topics: ["Sampling", "Probability", "Distributions", "Inference"] },
+    { test: /biology/, topics: ["Cells", "Genetics", "Respiration", "Lab Analysis"] },
+    { test: /chemistry/, topics: ["Atoms", "Moles", "Balancing", "Reactions"] },
+    { test: /history/, topics: ["Primary Sources", "Vocabulary", "Short Response", "Document Analysis"] },
+    { test: /english/, topics: ["Theme", "Evidence", "Rhetoric", "Writing"] },
+    { test: /computer|coding|python/, topics: ["For Loops", "Iteration", "Debugging", "Functions"] },
+    { test: /spanish|language/, topics: ["Vocabulary", "Speaking", "Listening", "Writing"] },
+  ];
+  const matched = topicSets.find((entry) => entry.test.test(className));
+  const topics = matched?.topics || ["Core Skill", "Practice", "Application", "Assessment"];
+  const quiz = clampNumber(student.recent_quiz_avg, 0, 100, 75);
+  const test = clampNumber(student.recent_test_avg, 0, 100, quiz);
+  const delta = Math.max(-12, Math.min(12, test - quiz));
+  const baseScores = [quiz + 4, quiz - 3, Math.round((quiz + test) / 2), test + delta / 2].map((score) => clampNumber(score, 0, 100, quiz));
+  return topics.map((topic, index) => ({
+    topic,
+    score: baseScores[index] ?? quiz,
+    assessed_on: `2026-04-${String(4 + index * 7).padStart(2, "0")}`,
+    type: index === 3 ? "test" : index === 2 ? "classwork" : "quiz",
+  }));
+}
+
+function getStudentTopicHistory(student) {
+  const normalized = parseTopicHistoryValue(student.topic_history)
+    .map((entry, index) => normalizeTopicHistoryEntry(entry, index))
+    .filter((entry) => entry.topic);
+  return normalized.length ? normalized : inferTopicHistoryFromSummary(student);
+}
+
 function normalizeStudent(record) {
   return {
     student_id: String(record.student_id || "").trim(),
@@ -653,6 +1051,7 @@ function normalizeStudent(record) {
     teacher_notes: String(record.teacher_notes || "").trim(),
     advisor_email: normalizeEmail(record.advisor_email),
     parent_email: normalizeEmail(record.parent_email),
+    topic_history: getStudentTopicHistory(record),
   };
 }
 
@@ -683,6 +1082,27 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+function containsLatexDelimiters(value) {
+  const text = String(value || "");
+  return /\$\$[\s\S]+?\$\$|\$[^$\n]+\$|\\\([\s\S]+?\\\)|\\\[[\s\S]+?\\\]/.test(text);
+}
+
+function buildInlineFractionHtml(numerator, denominator) {
+  return `<span class="inline-fraction"><span class="fraction-top">${numerator}</span><span class="fraction-bar"></span><span class="fraction-bottom">${denominator}</span></span>`;
+}
+
+function formatDisplayMathHtml(value) {
+  const text = String(value || "");
+  let escaped = escapeHtml(text);
+  if (containsLatexDelimiters(text)) {
+    return escaped;
+  }
+  escaped = escaped.replace(/\(([^()\n]{1,28})\)\/\(([^()\n]{1,28})\)/g, (_, numerator, denominator) => buildInlineFractionHtml(numerator, denominator));
+  escaped = escaped.replace(/sqrt\(([^()\n]+)\)/g, '<span class="math-radical">&radic;<span class="math-radical-arg">$1</span></span>');
+  escaped = escaped.replace(/overline\(([^()\n]+)\)/g, '<span class="math-overline">$1</span>');
+  return escaped.replace(/([A-Za-z0-9\)\]]+)\s*\^\s*(-?\d+(?:\.\d+)?)/g, "$1<sup>$2</sup>");
+}
+
 function slugify(value) {
   return String(value || "")
     .toLowerCase()
@@ -710,6 +1130,9 @@ function stripHtml(html) {
     String(html || "")
       .replace(/<style[\s\S]*?<\/style>/gi, " ")
       .replace(/<script[\s\S]*?<\/script>/gi, " ")
+      .replace(/<sup[^>]*>\s*([^<]+?)\s*<\/sup>/gi, "^$1")
+      .replace(/<sub[^>]*>\s*([^<]+?)\s*<\/sub>/gi, "_$1")
+      .replace(/<span[^>]*Apple-tab-span[^>]*>[\s\S]*?<\/span>/gi, "\n")
       .replace(/<br\s*\/?>/gi, "\n")
       .replace(/<\/(p|div|section|article|li|tr|h\d)>/gi, "\n")
       .replace(/<[^>]+>/g, " ")
@@ -718,6 +1141,110 @@ function stripHtml(html) {
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">"),
   );
+}
+
+function decodeXmlEntities(text) {
+  return String(text || "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#x2013;|&#8211;/g, "–")
+    .replace(/&#x2014;|&#8212;/g, "—")
+    .replace(/&#x2212;|&#8722;/g, "−")
+    .replace(/&#x00b7;|&#183;/g, "·")
+    .replace(/&#x03c0;|&#960;/gi, "π")
+    .replace(/&#x2159;/gi, "⅙")
+    .replace(/&#xa0;|&#160;/gi, " ");
+}
+
+function extractDocxXmlFragmentText(fragment) {
+  let text = String(fragment || "");
+  if (!text.trim()) {
+    return "";
+  }
+
+  text = text
+    .replace(/<mc:Fallback[\s\S]*?<\/mc:Fallback>/gi, "")
+    .replace(/<w:tab(?:\s+[^>]*)?\/>/gi, "\t")
+    .replace(/<w:br(?:\s+[^>]*)?\/>/gi, "\n")
+    .replace(/<\/w:tr>/gi, "\n")
+    .replace(/<\/w:tc>/gi, "\t")
+    .replace(/<\/w:p>/gi, "\n");
+
+  text = text.replace(
+    /<w:r\b[^>]*>(?:(?!<\/w:r>)[\s\S])*?<w:vertAlign\b[^>]*w:val="superscript"[^>]*\/>(?:(?!<\/w:r>)[\s\S])*?<w:t[^>]*>([\s\S]*?)<\/w:t>(?:(?!<\/w:r>)[\s\S])*?<\/w:r>/gi,
+    (_, value) => `^${decodeXmlEntities(value)}`,
+  );
+  text = text.replace(
+    /<w:r\b[^>]*>(?:(?!<\/w:r>)[\s\S])*?<w:vertAlign\b[^>]*w:val="subscript"[^>]*\/>(?:(?!<\/w:r>)[\s\S])*?<w:t[^>]*>([\s\S]*?)<\/w:t>(?:(?!<\/w:r>)[\s\S])*?<\/w:r>/gi,
+    (_, value) => `_${decodeXmlEntities(value)}`,
+  );
+
+  let previous = "";
+  while (text !== previous) {
+    previous = text;
+    text = text.replace(
+      /<m:f>[\s\S]*?<m:num>([\s\S]*?)<\/m:num>[\s\S]*?<m:den>([\s\S]*?)<\/m:den>[\s\S]*?<\/m:f>/gi,
+      (_, numerator, denominator) => `(${extractDocxXmlFragmentText(numerator).trim()})/(${extractDocxXmlFragmentText(denominator).trim()})`,
+    );
+    text = text.replace(
+      /<m:rad>[\s\S]*?<m:e>([\s\S]*?)<\/m:e>[\s\S]*?<\/m:rad>/gi,
+      (_, expression) => `sqrt(${extractDocxXmlFragmentText(expression).trim()})`,
+    );
+    text = text.replace(
+      /<m:sSup>[\s\S]*?<m:e>([\s\S]*?)<\/m:e>[\s\S]*?<m:sup>([\s\S]*?)<\/m:sup>[\s\S]*?<\/m:sSup>/gi,
+      (_, base, exponent) => `${extractDocxXmlFragmentText(base).trim()}^${extractDocxXmlFragmentText(exponent).trim()}`,
+    );
+    text = text.replace(
+      /<m:bar>[\s\S]*?<m:e>([\s\S]*?)<\/m:e>[\s\S]*?<\/m:bar>/gi,
+      (_, expression) => `overline(${extractDocxXmlFragmentText(expression).trim()})`,
+    );
+  }
+
+  text = text
+    .replace(/<w:t[^>]*>([\s\S]*?)<\/w:t>/gi, (_, value) => decodeXmlEntities(value))
+    .replace(/<m:t[^>]*>([\s\S]*?)<\/m:t>/gi, (_, value) => decodeXmlEntities(value))
+    .replace(/<[^>]+>/g, " ");
+
+  return normalizeImportedText(
+    decodeXmlEntities(text)
+      .replace(/\t{2,}/g, "\t")
+      .replace(/ *\t */g, "\t")
+      .replace(/(?:^|\n)\d{6,}\s+\d{6,}(?=\n|$)/g, "\n")
+      .replace(/[^\S\n\t]+/g, " ")
+      .replace(/\n{3,}/g, "\n\n"),
+  );
+}
+
+function scoreImportedExtraction(text) {
+  const normalized = normalizeImportedText(text);
+  if (!normalized) {
+    return 0;
+  }
+
+  const numberedQuestions = (normalized.match(/(?:^|\n)\s*\d{1,3}\.\s+/g) || []).length;
+  const letteredItems = (normalized.match(/(?:^|\n)\s*[A-Z]\.\s+/g) || []).length;
+  const mathSignals = (normalized.match(/sqrt\(|\^|\(|\)|π|÷|×|\/|\bperimeter\b|\btriangle\b/gi) || []).length;
+  const alphaChars = (normalized.match(/[A-Za-z]/g) || []).length;
+  return numberedQuestions * 6 + letteredItems * 2 + mathSignals * 2 + Math.min(alphaChars, 400) / 25;
+}
+
+function extractDocxTextFromXml(filePath) {
+  try {
+    const xml = execFileSync("/usr/bin/unzip", ["-p", filePath, "word/document.xml"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      maxBuffer: 1024 * 1024 * 16,
+    });
+    const paragraphs = (xml.match(/<w:p\b[\s\S]*?<\/w:p>/gi) || [])
+      .map((paragraph) => extractDocxXmlFragmentText(paragraph))
+      .filter((paragraph) => paragraph && !/^\d{6,}\s+\d{6,}$/.test(paragraph));
+    return normalizeImportedText(paragraphs.join("\n"));
+  } catch (error) {
+    return "";
+  }
 }
 
 function writeTempUpload(fileName, buffer) {
@@ -739,6 +1266,31 @@ function cleanupTempUpload(tempDir) {
 }
 
 function extractDocTextWithTextutil(filePath) {
+  const xmlText = extractDocxTextFromXml(filePath);
+
+  try {
+    const html = execFileSync("/usr/bin/textutil", ["-convert", "html", "-stdout", filePath], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      maxBuffer: 1024 * 1024 * 8,
+    });
+    const normalizedHtmlText = stripHtml(html)
+      .replace(/\n(?=\d{1,3}\.\s)/g, "\n")
+      .replace(/([^\n])\s{2,}(?=\d{1,3}\.\s)/g, "$1\n");
+    if (scoreImportedExtraction(xmlText) >= scoreImportedExtraction(normalizedHtmlText) && xmlText) {
+      return xmlText;
+    }
+    if (normalizedHtmlText) {
+      return normalizedHtmlText;
+    }
+  } catch (error) {
+    // fall through to plain text export
+  }
+
+  if (xmlText) {
+    return xmlText;
+  }
+
   try {
     return execFileSync("/usr/bin/textutil", ["-convert", "txt", "-stdout", filePath], {
       encoding: "utf8",
@@ -849,6 +1401,273 @@ function extractTextFromUpload(fileName, mimeType, fileData) {
   };
 }
 
+function buildAssessmentTextFromStructuredImport(payload) {
+  const title = normalizeImportedText(payload?.title || "Imported Assessment");
+  const sections = Array.isArray(payload?.sections) ? payload.sections : [];
+  const chunks = [];
+
+  if (title) {
+    chunks.push(title);
+  }
+
+  sections.forEach((section, sectionIndex) => {
+    const sectionTitle = normalizeImportedText(section?.title || `Section ${sectionIndex + 1}`);
+    const questions = Array.isArray(section?.questions) ? section.questions : [];
+    if (!questions.length) {
+      return;
+    }
+    if (sectionTitle) {
+      chunks.push(sectionTitle);
+    }
+    questions.forEach((question, questionIndex) => {
+      const number = Number.parseInt(question?.number, 10) || questionIndex + 1;
+      const stem = normalizeImportedText(question?.stem || "");
+      const body = Array.isArray(question?.body) ? question.body.map((line) => normalizeImportedText(line)).filter(Boolean) : [];
+      const options = Array.isArray(question?.options) ? question.options : [];
+      if (!stem) {
+        return;
+      }
+      const lines = [`${number}. ${stem}`];
+      body.forEach((line) => lines.push(line));
+      options.forEach((option) => {
+        const label = normalizeImportedText(option?.label || "");
+        const text = normalizeImportedText(option?.text || "");
+        if (label && text) {
+          lines.push(`${label}. ${text}`);
+        }
+      });
+      chunks.push(lines.join("\n"));
+    });
+  });
+
+  return normalizeImportedText(chunks.join("\n\n"));
+}
+
+function buildAssessmentImportSchema() {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: ["title", "sections"],
+    properties: {
+      title: { type: "string" },
+      sections: {
+        type: "array",
+        items: {
+          type: "object",
+          additionalProperties: false,
+          required: ["title", "questions"],
+          properties: {
+            title: { type: "string" },
+            questions: {
+              type: "array",
+              items: {
+                type: "object",
+                additionalProperties: false,
+                required: ["number", "stem", "body", "options"],
+                properties: {
+                  number: { type: "integer" },
+                  stem: { type: "string" },
+                  body: {
+                    type: "array",
+                    items: { type: "string" },
+                  },
+                  options: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      additionalProperties: false,
+                      required: ["label", "text"],
+                      properties: {
+                        label: { type: "string" },
+                        text: { type: "string" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+}
+
+function parseStructuredAssessmentResponse(payload) {
+  const outputText = String(payload.output_text || "").trim();
+  if (!outputText) {
+    throw new Error("AI import returned no structured text.");
+  }
+  const structured = JSON.parse(outputText);
+  return buildAssessmentTextFromStructuredImport(structured);
+}
+
+function shouldTryAiAssessmentImport(fileName, mimeType, text) {
+  if (!OPENAI_API_KEY) {
+    return false;
+  }
+  const lowerName = String(fileName || "").toLowerCase();
+  const lowerType = String(mimeType || "").toLowerCase();
+  const content = String(text || "");
+  const isSupportedFile = [".docx", ".doc", ".rtf", ".pdf"].some((ext) => lowerName.endsWith(ext)) || lowerType.includes("pdf") || lowerType.includes("word");
+  if (!isSupportedFile) {
+    return false;
+  }
+  if (lowerName.endsWith(".pdf") || lowerType.includes("pdf")) {
+    return true;
+  }
+  return !content || /triangle|rectangle|perimeter|graph|fraction|sqrt\(|overline\(|\^|exponent|polynomial|algebra|geometry|evaluate|simplify|rational|irrational|integer|expression|π/i.test(content);
+}
+
+function makeJsonSchemaResponseBody(model, input) {
+  return {
+    model,
+    input,
+    text: {
+      format: {
+        type: "json_schema",
+        name: "assessment_import",
+        schema: buildAssessmentImportSchema(),
+        strict: true,
+      },
+    },
+  };
+}
+
+function extractDocxEmbeddedImages(fileData, maxImages = 4) {
+  const images = [];
+  const extension = ".docx";
+  const { tempDir, tempPath } = writeTempUpload(`upload${extension}`, Buffer.from(String(fileData || ""), "base64"));
+  try {
+    const listing = execFileSync("/usr/bin/unzip", ["-Z1", tempPath], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      maxBuffer: 1024 * 1024 * 4,
+    });
+    const mediaEntries = listing
+      .split("\n")
+      .map((entry) => entry.trim())
+      .filter((entry) => /^word\/media\/.+\.(png|jpe?g|gif|webp)$/i.test(entry))
+      .slice(0, maxImages);
+
+    for (const entry of mediaEntries) {
+      const buffer = execFileSync("/usr/bin/unzip", ["-p", tempPath, entry], {
+        stdio: ["ignore", "pipe", "ignore"],
+        maxBuffer: 1024 * 1024 * 12,
+      });
+      if (!buffer?.length) {
+        continue;
+      }
+      const lower = entry.toLowerCase();
+      const mime =
+        lower.endsWith(".png") ? "image/png" : lower.endsWith(".webp") ? "image/webp" : lower.endsWith(".gif") ? "image/gif" : "image/jpeg";
+      images.push({
+        entry,
+        mimeType: mime,
+        base64: buffer.toString("base64"),
+      });
+    }
+  } catch (error) {
+    return [];
+  } finally {
+    cleanupTempUpload(tempDir);
+  }
+  return images;
+}
+
+async function callOpenAiAssessmentImport(payload) {
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`AI import failed: ${response.status} ${errorText.slice(0, 240)}`);
+  }
+
+  return response.json();
+}
+
+async function improveAssessmentImportWithOpenAI({ text, fileName, mimeType, fileData }) {
+  const lowerName = String(fileName || "").toLowerCase();
+  const lowerType = String(mimeType || "").toLowerCase();
+  const userPrompt =
+    "Recover the assessment structure from this imported teacher resource. Preserve sections, question numbering, answer choices, math notation, graph references, geometry side labels, tables, and layout cues that matter for building high-quality parallel versions. Ignore page coordinates, copyright footers, and repeated decorative noise. If a diagram is essential, mention it clearly in the relevant question body instead of dropping it.";
+
+  if ((lowerName.endsWith(".pdf") || lowerType.includes("pdf")) && fileData) {
+    const input = [
+      {
+        role: "system",
+        content: [
+          {
+            type: "input_text",
+            text: "You clean up imported teacher assessments. Reconstruct the original sections and questions from PDFs using both page text and visuals. Preserve worksheet style and math notation. Return valid JSON only.",
+          },
+        ],
+      },
+      {
+        role: "user",
+        content: [
+          {
+            type: "input_file",
+            filename: fileName || "uploaded-resource.pdf",
+            file_data: fileData,
+          },
+          {
+            type: "input_text",
+            text: `Filename: ${fileName || "uploaded-resource"}\nMime type: ${mimeType || "application/pdf"}\n\n${userPrompt}\n\nIf any OCR text was recovered locally, use it as a hint but prefer the actual PDF pages when the local extraction looks broken:\n\n${text || "(no reliable local extraction)"}`,
+          },
+        ],
+      },
+    ];
+    const payload = await callOpenAiAssessmentImport(makeJsonSchemaResponseBody(OPENAI_IMPORT_MODEL, input));
+    return parseStructuredAssessmentResponse(payload);
+  }
+
+  const content = [
+    {
+      type: "input_text",
+      text:
+        `Filename: ${fileName || "uploaded-resource"}\nMime type: ${mimeType || "unknown"}\n\n${userPrompt}\n\nRecovered text:\n\n${text || "(no extracted text available)"}`,
+    },
+  ];
+
+  if (lowerName.endsWith(".docx") && fileData) {
+    const embeddedImages = extractDocxEmbeddedImages(fileData);
+    embeddedImages.forEach((image) => {
+      content.push({
+        type: "input_image",
+        image_url: `data:${image.mimeType};base64,${image.base64}`,
+        detail: "high",
+      });
+    });
+  }
+
+  const payload = await callOpenAiAssessmentImport(
+    makeJsonSchemaResponseBody(OPENAI_IMPORT_MODEL, [
+      {
+        role: "system",
+        content: [
+          {
+            type: "input_text",
+            text: "You clean up imported teacher assessments. Reconstruct the original sections and questions from messy OCR, DOCX, or Word text plus any attached diagrams. Preserve worksheet style, math notation, and geometry labels. Do not invent whole new sections. Return valid JSON only.",
+          },
+        ],
+      },
+      {
+        role: "user",
+        content,
+      },
+    ]),
+  );
+  return parseStructuredAssessmentResponse(payload);
+}
+
 function inferAssessmentContext(text) {
   const lower = text.toLowerCase();
   const gradeMatch = text.match(/(?:grade|for)\s+(\d{1,2})(?:th|st|nd|rd)?/i);
@@ -879,6 +1698,44 @@ function inferAssessmentContext(text) {
     topic,
     gradeLevel: gradeMatch ? gradeMatch[1] : "",
     duration: durationMatch ? `${durationMatch[1]} minutes` : "",
+  };
+}
+
+function analyzeImportedAssessmentText(text) {
+  const normalized = normalizeImportedText(text);
+  const lines = normalized
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const alphaChars = (normalized.match(/[A-Za-z]/g) || []).length;
+  const digitChars = (normalized.match(/\d/g) || []).length;
+  const copyrightHits = (normalized.match(/copyright\s+deltamath/gi) || []).length;
+  const standaloneNumberLines = lines.filter((line) => /^\d+[\.\)]?$/.test(line)).length;
+  const artifactLines = lines.filter(
+    (line) =>
+      /^(?:©\s*)?copyright\s+deltamath\b/i.test(line) ||
+      /^page\s+\d+$/i.test(line) ||
+      /^\d+$/.test(line),
+  ).length;
+  const wordyLines = lines.filter((line) => /[A-Za-z]{3,}/.test(line)).length;
+
+  const lowSignal =
+    !normalized ||
+    (alphaChars > 0 && digitChars > alphaChars * 1.4) ||
+    (lines.length >= 8 && standaloneNumberLines / lines.length > 0.34) ||
+    (lines.length >= 8 && artifactLines / lines.length > 0.28) ||
+    (lines.length >= 8 && wordyLines / lines.length < 0.45) ||
+    copyrightHits >= 3;
+
+  return {
+    lowSignal,
+    lines: lines.length,
+    alphaChars,
+    digitChars,
+    standaloneNumberLines,
+    artifactLines,
+    wordyLines,
+    copyrightHits,
   };
 }
 
@@ -917,6 +1774,28 @@ function inferResponseLines(question, sectionTitle) {
     return 3;
   }
   return 4;
+}
+
+function isLikelyAssessmentQuestion(question) {
+  const stem = String(question?.stem || "").trim();
+  const body = Array.isArray(question?.body) ? question.body.map((line) => String(line || "").trim()).filter(Boolean) : [];
+  const combined = [stem, ...body].join(" ").trim();
+  if (!stem || !combined) {
+    return false;
+  }
+  if (/^(?:©\s*)?copyright|^page\s+\d+$/i.test(stem)) {
+    return false;
+  }
+  if (/^\d+[\.\)]?$/.test(stem)) {
+    return false;
+  }
+  if (combined.length < 3) {
+    return false;
+  }
+  if (!/[A-Za-z0-9π]/.test(combined)) {
+    return false;
+  }
+  return true;
 }
 
 function extractPoints(question, sectionTitle) {
@@ -1035,7 +1914,18 @@ function extractAssessmentBlueprint(text) {
   let totalPoints = 0;
   sections.forEach((section) => {
     const sectionType = getSectionDisplayType(section.title);
-    section.questions = section.questions.map((question) => {
+    const dedupe = new Set();
+    section.questions = section.questions
+      .filter((question) => isLikelyAssessmentQuestion(question))
+      .filter((question) => {
+        const key = `${question.number}::${normalizeImportedText(question.stem)}::${normalizeImportedText((question.body || []).join(" "))}`;
+        if (dedupe.has(key)) {
+          return false;
+        }
+        dedupe.add(key);
+        return true;
+      })
+      .map((question) => {
       const content = [question.stem, ...question.body].join("\n");
       const type = question.options.length >= 2 ? "multiple_choice" : /print\(|while |for |def |input\(/i.test(content) ? "code" : "short_response";
       const difficulty =
@@ -1046,16 +1936,16 @@ function extractAssessmentBlueprint(text) {
             : "moderate";
       questionCount += 1;
       totalPoints += extractPoints(question, section.title);
-      return {
-        ...question,
-        type,
-        difficulty,
-        prompts: content,
-        points: extractPoints(question, section.title),
-        responseLines: inferResponseLines(question, section.title),
-        sectionType,
-      };
-    });
+        return {
+          ...question,
+          type,
+          difficulty,
+          prompts: content,
+          points: extractPoints(question, section.title),
+          responseLines: inferResponseLines(question, section.title),
+          sectionType,
+        };
+      });
     section.totalPoints = section.questions.reduce((sum, question) => sum + (question.points || 0), 0);
   });
 
@@ -1068,12 +1958,41 @@ function extractAssessmentBlueprint(text) {
   };
 }
 
+function blueprintLooksUsable(blueprint) {
+  const questions = blueprint.sections.flatMap((section) => section.questions || []);
+  if (!questions.length) {
+    return false;
+  }
+
+  const weakStemCount = questions.filter((question) => {
+    const stem = String(question.stem || "").trim();
+    return (
+      stem.length < 8 ||
+      !/[A-Za-z]/.test(stem) ||
+      /^\d+[\.\)]?$/.test(stem) ||
+      /copyright\s+deltamath/i.test(stem) ||
+      /^tech scenario:\s*(?:©\s*)?copyright/i.test(stem)
+    );
+  }).length;
+
+  return weakStemCount / questions.length < 0.35;
+}
+
 function buildQuestionPrompt(question) {
   return [question.stem, ...question.body].filter(Boolean).join("\n");
 }
 
+function getVersionLabel(index) {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  if (index < alphabet.length) {
+    return alphabet[index];
+  }
+  const prefix = alphabet[Math.floor(index / alphabet.length) - 1] || "A";
+  return `${prefix}${alphabet[index % alphabet.length]}`;
+}
+
 function shiftNumericText(text, versionIndex, salt = 0) {
-  const delta = versionIndex === 0 ? 2 + (salt % 3) : 5 + (salt % 4);
+  const delta = 2 + versionIndex * 3 + (salt % 3);
   return String(text).replace(/\b\d+\b/g, (value) => {
     const num = Number.parseInt(value, 10);
     if (!Number.isFinite(num)) {
@@ -1104,9 +2023,7 @@ function swapSurfaceContext(text, versionIndex, questionNumber = 0) {
 }
 
 function buildParallelStem(stem, versionIndex, questionNumber) {
-  const versionTag = versionIndex === 0 ? "Version A" : "Version B";
-  const contextLead = versionIndex === 0 ? "School scenario" : "Tech scenario";
-  return `${contextLead}: ${swapSurfaceContext(shiftNumericText(stem, versionIndex, questionNumber), versionIndex, questionNumber)} (${versionTag})`;
+  return swapSurfaceContext(shiftNumericText(stem, versionIndex, questionNumber), versionIndex, questionNumber);
 }
 
 function buildParallelBodyLines(lines, versionIndex, questionNumber) {
@@ -1120,6 +2037,7 @@ function buildDetailedKey(question) {
 function rewriteWhileLoopQuestion(question, versionIndex) {
   const prompt = buildQuestionPrompt(question);
   const offset = versionIndex + 1;
+  const versionLabel = getVersionLabel(versionIndex);
 
   if (question.type === "multiple_choice") {
     return {
@@ -1146,7 +2064,7 @@ function rewriteWhileLoopQuestion(question, versionIndex) {
   if (question.type === "code" || /trace|predict output/i.test(prompt)) {
     return {
       ...question,
-      stem: `Trace the program and record the output for Version ${versionIndex === 0 ? "A" : "B"}.`,
+      stem: `Trace the program and record the output for Version ${versionLabel}.`,
       body: [
         `total = ${offset}`,
         `step = ${offset + 1}`,
@@ -1195,7 +2113,7 @@ function rewriteWhileLoopQuestion(question, versionIndex) {
 
 function rewriteGenericQuestion(question, versionIndex, context) {
   const prompt = buildQuestionPrompt(question);
-  const label = versionIndex === 0 ? "A" : "B";
+  const label = getVersionLabel(versionIndex);
   const questionNumber = Number(question.number || 0);
   const namePair = versionIndex === 0 ? ["Ada", "Lovelace"] : ["Alan", "Turing"];
   const moduloPair = versionIndex === 0 ? [17, 5] : [19, 6];
@@ -1437,9 +2355,34 @@ function rewriteGenericQuestion(question, versionIndex, context) {
   };
 }
 
+function isMathFocusedQuestion(question, context) {
+  const prompt = buildQuestionPrompt(question);
+  const combined = `${context.course} ${context.topic} ${prompt}`;
+  return /algebra|geometry|pre-algebra|polynomial|perimeter|triangle|rectangle|fraction|integer|rational|irrational|expression|exponent|simplify|evaluate|\bx\b|\by\b|\ba\b|\bb\b|\bc\b|π|sqrt\(|\^|÷|×|\|/i.test(combined);
+}
+
+function rewriteMathQuestion(question, versionIndex) {
+  const label = getVersionLabel(versionIndex);
+  const questionNumber = Number(question.number || 0);
+  const updatedStem = shiftNumericText(question.stem, versionIndex, questionNumber);
+  const updatedBody = (question.body || []).map((line, index) => shiftNumericText(line, versionIndex, questionNumber + index + 1));
+  return {
+    ...question,
+    stem: updatedStem,
+    body: updatedBody,
+    options: question.options.map((option, index) => ({
+      ...option,
+      text: shiftNumericText(option.text, versionIndex, questionNumber + index + 1),
+    })),
+    answer: `Teacher key for Version ${label}: solve the updated expression or figure using the same algebra skill as the original.`,
+    solvedAnswer: `Teacher key for Version ${label}: same format and same standard as the original problem, but with updated values and a fresh final answer.`,
+    teacherNote: `Version ${label} keeps the same worksheet style and math structure while changing the actual values.`,
+  };
+}
+
 function createParallelAssessment(blueprint, context, versionIndex) {
   return {
-    name: `Version ${versionIndex === 0 ? "A" : "B"}`,
+    name: `Version ${getVersionLabel(versionIndex)}`,
     resemblesTestSheet: blueprint.resemblesTestSheet,
     sections: blueprint.sections.map((section) => ({
       title: section.title,
@@ -1449,6 +2392,8 @@ function createParallelAssessment(blueprint, context, versionIndex) {
       questions: section.questions.map((question) =>
         /while loop|while loops/i.test(context.topic) || /while loop|while loops/i.test(buildQuestionPrompt(question))
           ? rewriteWhileLoopQuestion(question, versionIndex)
+          : isMathFocusedQuestion(question, context)
+            ? rewriteMathQuestion(question, versionIndex)
           : rewriteGenericQuestion(question, versionIndex, context),
       ),
     })),
@@ -1457,10 +2402,10 @@ function createParallelAssessment(blueprint, context, versionIndex) {
 
 function renderQuestionHtml(question, showAnswers = false) {
   const optionHtml = question.options.length
-    ? `<ul class="answer-options">${question.options.map((option) => `<li><strong>${escapeHtml(option.label)}.</strong> ${escapeHtml(option.text)}</li>`).join("")}</ul>`
+    ? `<ul class="answer-options">${question.options.map((option) => `<li><strong>${escapeHtml(option.label)}.</strong> ${formatDisplayMathHtml(option.text)}</li>`).join("")}</ul>`
     : "";
   const bodyHtml = question.body.length
-    ? `<div class="question-body">${question.body.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}</div>`
+    ? `<div class="question-body">${question.body.map((line) => `<p>${formatDisplayMathHtml(line)}</p>`).join("")}</div>`
     : "";
   const lineCount = Math.max(1, Number(question.responseLines || 3));
   const studentLines = Array.from({ length: lineCount }, () => "<span></span>").join("");
@@ -1471,7 +2416,7 @@ function renderQuestionHtml(question, showAnswers = false) {
   return `
     <article class="parallel-question question-type-${escapeHtml(question.type)} section-${escapeHtml(question.sectionType || "default")}">
       <div class="parallel-question-head">
-        <h4>${escapeHtml(`${question.number}. ${question.stem}`)}</h4>
+        <h4>${formatDisplayMathHtml(`${question.number}. ${question.stem}`)}</h4>
         <span class="point-badge">${escapeHtml(`${question.points || 1} pt${question.points === 1 ? "" : "s"}`)}</span>
       </div>
       ${bodyHtml}
@@ -1511,10 +2456,11 @@ function renderAssessmentVersionHtml(bundleTitle, context, version, showAnswers 
   `;
 }
 
-function buildAssessmentTransform(sourceText, sourceType, targetType) {
+function buildAssessmentTransform(sourceText, sourceType, targetType, requestedVersionCount = 2) {
   const context = inferAssessmentContext(sourceText);
   const blueprint = extractAssessmentBlueprint(sourceText);
-  const versions = [0, 1].map((index) => createParallelAssessment(blueprint, context, index));
+  const versionCount = Math.max(2, Math.min(6, Number.parseInt(requestedVersionCount, 10) || 2));
+  const versions = Array.from({ length: versionCount }, (_, index) => createParallelAssessment(blueprint, context, index));
   const originalOutline = blueprint.sections
     .map(
       (section) => `
@@ -1536,13 +2482,15 @@ function buildAssessmentTransform(sourceText, sourceType, targetType) {
   return {
     kind: "assessment_transform",
     title: `${context.course} ${context.topic} Parallel Assessment Builder`.trim(),
-    summary: `Imported ${blueprint.questionCount} questions across ${blueprint.sections.length} section${blueprint.sections.length === 1 ? "" : "s"} and rebuilt them into parallel versions with the same pacing and skill targets.`,
+    summary: `Imported ${blueprint.questionCount} questions across ${blueprint.sections.length} section${blueprint.sections.length === 1 ? "" : "s"} and rebuilt ${versionCount} parallel versions with the same pacing, structure, and skill targets.`,
     blueprint,
     context,
+    versionCount,
     versions: versions.map((version) => ({
       name: version.name,
       questionCount: version.sections.reduce((count, section) => count + section.questions.length, 0),
       totalPoints: version.sections.reduce((sum, section) => sum + (section.totalPoints || 0), 0),
+      sections: version.sections,
       studentHtml: renderAssessmentVersionHtml(`${context.topic} Assessment`, context, version, false),
       keyHtml: renderAssessmentVersionHtml(`${context.topic} Teacher Key`, context, version, true),
       preview: version.sections.map((section) => ({
@@ -1875,7 +2823,7 @@ async function sendEmail({ to, subject, text }, config = null) {
   );
 }
 
-async function sendPasswordResetEmail(req, email, resetToken, mailConfig = null) {
+async function sendPasswordResetEmail(req, email, resetToken) {
   const message = [
     "A password reset was requested for your TeacherFlowAI account.",
     "",
@@ -1891,7 +2839,7 @@ async function sendPasswordResetEmail(req, email, resetToken, mailConfig = null)
     to: email,
     subject: "TeacherFlowAI password reset",
     text: message.join("\n"),
-  }, mailConfig);
+  });
 }
 
 function createSession(userId) {
@@ -2149,6 +3097,28 @@ async function handleApi(req, res, url) {
     return;
   }
 
+  if (req.method === "POST" && url.pathname === "/api/auth/demo") {
+    const user = await ensureDemoWorkspace();
+    const sessionId = createSession(user.id);
+    json(
+      res,
+      200,
+      {
+        user: sanitizeUser(user),
+        demo: true,
+      },
+      {
+        "Set-Cookie": createCookie(SESSION_COOKIE, sessionId, {
+          httpOnly: true,
+          path: "/",
+          sameSite: "Lax",
+          maxAge: 60 * 60 * 24 * 7,
+        }),
+      },
+    );
+    return;
+  }
+
   if (req.method === "POST" && url.pathname === "/api/auth/signout") {
     json(
       res,
@@ -2180,7 +3150,7 @@ async function handleApi(req, res, url) {
     await writeUsers(users);
 
     try {
-      await sendPasswordResetEmail(req, email, resetToken, users[userIndex].emailSettings || null);
+      await sendPasswordResetEmail(req, email, resetToken);
       json(res, 200, {
         ok: true,
         message: "Password reset email sent.",
@@ -2188,8 +3158,8 @@ async function handleApi(req, res, url) {
     } catch (error) {
       const failure = buildEmailFailurePayload(
         error,
-        "TeacherFlowAI email is not configured yet. Save SMTP settings in Settings → Email Provider or add SMTP values to .env.",
-        "TeacherFlowAI could not send the reset email. Check your SMTP settings and try again.",
+        "TeacherFlowAI password reset email is not configured on the server yet. Add SMTP values to the app environment.",
+        "TeacherFlowAI could not send the reset email from the app email service. Check the server SMTP settings and try again.",
       );
       json(res, failure.status, failure.body);
     }
@@ -2381,6 +3351,7 @@ async function handleApi(req, res, url) {
     const body = await readBody(req);
     const sourceType = String(body.sourceType || "worksheet").trim().toLowerCase();
     const targetType = String(body.targetType || "parallel-assessment").trim().toLowerCase();
+    const versionCount = Math.max(2, Math.min(6, Number.parseInt(body.versionCount, 10) || 2));
     const resourceText = String(body.resourceText || "").trim();
     const fileName = String(body.fileName || "").trim();
     const mimeType = String(body.mimeType || "").trim();
@@ -2407,7 +3378,46 @@ async function handleApi(req, res, url) {
       return;
     }
 
-    const result = buildAssessmentTransform(mergedText, sourceType, targetType);
+    let transformedText = mergedText;
+    let parserUsed = extracted.parser;
+
+    const isPdfUpload = Boolean(fileName && (fileName.toLowerCase().endsWith(".pdf") || mimeType.includes("pdf")));
+    const importAnalysis = isPdfUpload ? analyzeImportedAssessmentText(mergedText) : null;
+    const hasLowSignalPdfExtraction = Boolean(importAnalysis?.lowSignal);
+
+    if (shouldTryAiAssessmentImport(fileName, mimeType, mergedText)) {
+      try {
+        const aiText = await improveAssessmentImportWithOpenAI({
+          text: mergedText,
+          fileName,
+          mimeType,
+          fileData,
+        });
+        if (aiText) {
+          transformedText = aiText;
+          parserUsed = parserUsed ? `${parserUsed}+openai_vision_structured` : "openai_vision_structured";
+        }
+      } catch (error) {
+        // Keep the local parser as the baseline path if the AI fallback is unavailable.
+      }
+    }
+
+    if (hasLowSignalPdfExtraction && parserUsed === extracted.parser) {
+      json(res, 400, {
+        error:
+          "TeacherFlowAI could not reliably read that PDF. It looks image-based, graph-heavy, or missing a usable text layer, and the AI vision fallback was not available or did not recover enough structure. Add OPENAI_API_KEY, export a text-based PDF, paste the typed questions directly, or upload a DOCX/text version instead.",
+      });
+      return;
+    }
+
+    const result = buildAssessmentTransform(transformedText, sourceType, targetType, versionCount);
+    if (isPdfUpload && !blueprintLooksUsable(result.blueprint)) {
+      json(res, 400, {
+        error:
+          "TeacherFlowAI still recovered only partial PDF artifacts from that file, so the assessment would be inaccurate. This usually happens with graph/image worksheets. Use the OpenAI vision fallback with OPENAI_API_KEY, paste the questions directly, or upload a cleaner text-based export instead.",
+      });
+      return;
+    }
     await appendUserActivity(user.id, {
       type: "repurpose",
       title: fileName ? `Generated parallel assessment from ${fileName}` : "Generated parallel assessment from pasted resource",
@@ -2420,8 +3430,8 @@ async function handleApi(req, res, url) {
       ok: true,
       extraction: {
         fileName,
-        parser: extracted.parser,
-        textPreview: mergedText.slice(0, 500),
+        parser: parserUsed,
+        textPreview: transformedText.slice(0, 500),
       },
       result,
     });
@@ -2527,10 +3537,7 @@ async function handleApi(req, res, url) {
     const users = await readUsers();
     const current = users.find((candidate) => candidate.id === user.id);
     const savedConfig = current?.emailSettings || {};
-    if (!sanitizeEmailSettings(savedConfig).configured) {
-      json(res, 400, { error: "Email provider is not configured yet. Save SMTP settings first." });
-      return;
-    }
+    const hasCustomConfig = sanitizeEmailSettings(savedConfig).configured;
     const recipient = normalizeEmail(body.to || user.email);
     if (!recipient) {
       json(res, 400, { error: "A test email recipient is required." });
@@ -2544,14 +3551,21 @@ async function handleApi(req, res, url) {
           subject: "TeacherFlowAI SMTP test",
           text: `This is a TeacherFlowAI test email for ${user.email}.\n\nIf you received this, your email provider settings are working.`,
         },
-        savedConfig,
+        hasCustomConfig ? savedConfig : {},
       );
-      json(res, 200, { ok: true, message: `Test email sent to ${recipient}.` });
+      json(res, 200, {
+        ok: true,
+        message: hasCustomConfig
+          ? `Test email sent to ${recipient} using your custom email provider.`
+          : `Test email sent to ${recipient} using the TeacherFlowAI default sender.`,
+      });
     } catch (error) {
       const failure = buildEmailFailurePayload(
         error,
-        "Email provider is not configured yet. Save SMTP settings first.",
-        "TeacherFlowAI could not send the test email. Check the SMTP values and try again.",
+        "TeacherFlowAI email is not configured on the server yet. Add app-level SMTP settings to the server environment.",
+        hasCustomConfig
+          ? "TeacherFlowAI could not send the test email. Check the SMTP values and try again."
+          : "TeacherFlowAI could not send the test email from the default app sender. Check the server email configuration and try again.",
       );
       json(res, failure.status, failure.body);
     }

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>TeacherFlowAI Math Embed Demo</title>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]],
+          displayMath: [["\\[", "\\]"], ["$$", "$$"]],
+        },
+        startup: {
+          typeset: false,
+        },
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script defer src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #1c2140;
+        --muted: #5b6382;
+        --line: #dbe1f2;
+        --surface: #ffffff;
+        --surface-soft: #f5f7ff;
+        --brand: #3459e6;
+        --accent: #ff7c63;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", Arial, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(52, 89, 230, 0.14), transparent 32%),
+          linear-gradient(180deg, #fbfbff, #eef2fb 72%);
+      }
+
+      main {
+        max-width: 1024px;
+        margin: 0 auto;
+        padding: 32px 18px 64px;
+      }
+
+      .hero {
+        margin-bottom: 28px;
+      }
+
+      .hero h1 {
+        margin: 0 0 10px;
+        font-size: clamp(2rem, 4vw, 3.25rem);
+      }
+
+      .hero p {
+        max-width: 58rem;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .card {
+        margin-bottom: 22px;
+        padding: 22px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid var(--line);
+        box-shadow: 0 24px 48px rgba(25, 39, 88, 0.08);
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--brand);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      h2 {
+        margin: 0 0 10px;
+      }
+
+      .prompt {
+        padding: 16px 18px;
+        border-radius: 18px;
+        background: var(--surface-soft);
+        border: 1px solid var(--line);
+        overflow-x: auto;
+      }
+
+      .desmos-graph,
+      .geogebra-frame {
+        width: 100%;
+        min-height: 380px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        overflow: hidden;
+        background: #fff;
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      .tag {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(52, 89, 230, 0.08);
+        color: var(--brand);
+        font-weight: 700;
+        font-size: 0.84rem;
+      }
+
+      code {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(255, 124, 99, 0.12);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <p class="eyebrow">Self-Contained Example</p>
+        <h1>MathJax + Desmos + GeoGebra in one quiz page</h1>
+        <p>
+          This file shows the three browser-side pieces separately: LaTeX equations rendered by MathJax, an
+          interactive Desmos graph mounted from one <code>&lt;div&gt;</code>, and a GeoGebra geometry applet embedded with one
+          <code>&lt;iframe&gt;</code>.
+        </p>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Question 1</p>
+        <h2>Rendered math equation</h2>
+        <p>Solve the quadratic and explain how the discriminant changes the number of real solutions.</p>
+        <div class="prompt">
+          \[
+            x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+          \]
+          <br />
+          For \(2x^2 - 7x - 4 = 0\), write the exact solution and then estimate the decimal value of each root.
+        </div>
+        <div class="tag-row">
+          <span class="tag">MathJax display math</span>
+          <span class="tag">Inline TeX: \(b^2 - 4ac\)</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Question 2</p>
+        <h2>Interactive Desmos graph</h2>
+        <p>Use the graph to estimate the vertex and x-intercepts of the parabola. Then predict how the graph changes if the coefficient of \(x^2\) doubles.</p>
+        <div
+          id="demo-desmos"
+          class="desmos-graph"
+          data-desmos-expression="y=x^2-4x+3"
+          data-desmos-left="-2"
+          data-desmos-right="6"
+          data-desmos-bottom="-4"
+          data-desmos-top="8"
+        ></div>
+        <div class="tag-row">
+          <span class="tag">Desmos API</span>
+          <span class="tag">Simple div container</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="eyebrow">Question 3</p>
+        <h2>GeoGebra geometry drawing</h2>
+        <p>Inspect the embedded geometry diagram and explain how the triangle’s side lengths affect the perimeter expression.</p>
+        <iframe
+          class="geogebra-frame"
+          title="GeoGebra geometry example"
+          src="https://www.geogebra.org/material/iframe/id/DTvbTWRG/width/960/height/420/border/888888/rc/false/ai/false/sdz/true/smb/false/stb/false/stbh/true/ld/false/sri/false/at/preferhtml5"
+          allowfullscreen
+        ></iframe>
+        <div class="tag-row">
+          <span class="tag">GeoGebra iframe</span>
+          <span class="tag">Geometry-ready slot</span>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      function mountDesmosGraphs() {
+        if (!window.Desmos) {
+          return;
+        }
+        document.querySelectorAll(".desmos-graph[data-desmos-expression]").forEach((element) => {
+          if (element.dataset.desmosMounted === "true") {
+            return;
+          }
+          element.dataset.desmosMounted = "true";
+          const calculator = window.Desmos.GraphingCalculator(element, {
+            expressions: false,
+            keypad: false,
+            settingsMenu: false,
+            expressionsCollapsed: true,
+            border: false,
+            projectorMode: true,
+          });
+          calculator.setExpression({ id: "main", latex: element.dataset.desmosExpression });
+          calculator.setMathBounds({
+            left: Number(element.dataset.desmosLeft),
+            right: Number(element.dataset.desmosRight),
+            bottom: Number(element.dataset.desmosBottom),
+            top: Number(element.dataset.desmosTop),
+          });
+        });
+      }
+
+      window.addEventListener("load", () => {
+        mountDesmosGraphs();
+        window.MathJax?.typesetPromise?.([document.body]).catch(() => {});
+      });
+    </script>
+  </body>
+</html>

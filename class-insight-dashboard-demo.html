@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Class Insight Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      :root {
+        --bg: #f4f6fb;
+        --surface: #ffffff;
+        --surface-soft: #eef3ff;
+        --line: #d6deef;
+        --ink: #1c2740;
+        --ink-soft: #667089;
+        --brand: #3157d7;
+        --brand-soft: #e7eeff;
+        --good: #2e8b57;
+        --warn: #c48a1d;
+        --bad: #c94949;
+        --shadow: 0 18px 40px rgba(28, 39, 64, 0.08);
+        --radius-lg: 22px;
+        --radius-md: 16px;
+        --radius-sm: 12px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(49, 87, 215, 0.08), transparent 26%),
+          linear-gradient(180deg, #fbfcff 0%, var(--bg) 100%);
+      }
+
+      .app-shell {
+        display: grid;
+        grid-template-columns: 270px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 28px 20px;
+        border-right: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(10px);
+      }
+
+      .brand {
+        margin-bottom: 28px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--brand);
+      }
+
+      .brand h1 {
+        margin: 0 0 10px;
+        font-size: 1.5rem;
+        line-height: 1.15;
+      }
+
+      .brand p {
+        margin: 0;
+        color: var(--ink-soft);
+        line-height: 1.6;
+      }
+
+      .nav-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .nav-link {
+        display: block;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        color: var(--ink);
+        text-decoration: none;
+        font-weight: 600;
+        background: #fff;
+      }
+
+      .nav-link:hover {
+        border-color: var(--brand);
+        background: var(--brand-soft);
+      }
+
+      .sidebar-actions {
+        display: grid;
+        gap: 10px;
+        margin-top: 28px;
+      }
+
+      .button {
+        min-height: 46px;
+        padding: 12px 16px;
+        border: 1px solid var(--brand);
+        border-radius: 999px;
+        background: var(--brand);
+        color: #fff;
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .button.secondary {
+        border-color: var(--line);
+        background: #fff;
+        color: var(--ink);
+      }
+
+      .content {
+        padding: 28px;
+      }
+
+      .hero {
+        padding: 26px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-lg);
+        background:
+          radial-gradient(circle at top right, rgba(49, 87, 215, 0.08), transparent 24%),
+          var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .hero h2 {
+        margin: 0 0 10px;
+        font-size: clamp(1.8rem, 3vw, 2.5rem);
+      }
+
+      .hero p {
+        margin: 0;
+        max-width: 62rem;
+        color: var(--ink-soft);
+        line-height: 1.7;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin: 22px 0 10px;
+      }
+
+      .stat-card,
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-lg);
+        background: var(--surface);
+        box-shadow: var(--shadow);
+      }
+
+      .stat-card {
+        padding: 18px;
+      }
+
+      .stat-card strong {
+        display: block;
+        margin-top: 8px;
+        font-size: 1.7rem;
+      }
+
+      .stat-card span {
+        color: var(--ink-soft);
+        font-size: 0.9rem;
+      }
+
+      .section {
+        margin-top: 22px;
+        scroll-margin-top: 20px;
+      }
+
+      .panel {
+        padding: 22px;
+      }
+
+      .panel-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+        margin-bottom: 18px;
+      }
+
+      .panel-head h3 {
+        margin: 0 0 6px;
+        font-size: 1.25rem;
+      }
+
+      .panel-head p {
+        margin: 0;
+        color: var(--ink-soft);
+        line-height: 1.6;
+      }
+
+      .field-grid,
+      .split-grid,
+      .class-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .field-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .split-grid {
+        grid-template-columns: 360px minmax(0, 1fr);
+      }
+
+      .class-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+        font-weight: 600;
+      }
+
+      select,
+      textarea,
+      input {
+        width: 100%;
+        min-height: 48px;
+        padding: 12px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-sm);
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+      }
+
+      textarea {
+        min-height: 138px;
+        resize: vertical;
+      }
+
+      .student-score-list,
+      .alert-list,
+      .recommendation-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .student-score-item,
+      .alert-card,
+      .recommendation-card {
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: #fff;
+      }
+
+      .student-score-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .student-score-item.bad {
+        border-color: rgba(201, 73, 73, 0.35);
+        background: rgba(201, 73, 73, 0.06);
+      }
+
+      .score-badge {
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+
+      .score-good {
+        background: rgba(46, 139, 87, 0.14);
+        color: var(--good);
+      }
+
+      .score-warn {
+        background: rgba(196, 138, 29, 0.14);
+        color: var(--warn);
+      }
+
+      .score-bad {
+        background: rgba(201, 73, 73, 0.14);
+        color: var(--bad);
+      }
+
+      .chart-shell {
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-md);
+        background: linear-gradient(180deg, #fff, #fafcff);
+      }
+
+      .chart-shell canvas {
+        width: 100% !important;
+        height: 320px !important;
+      }
+
+      .microcopy {
+        color: var(--ink-soft);
+        line-height: 1.6;
+        font-size: 0.92rem;
+      }
+
+      .class-average-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .class-average-table th,
+      .class-average-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+      }
+
+      .class-average-table th {
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--ink-soft);
+      }
+
+      .topic-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.84rem;
+      }
+
+      .topic-good {
+        background: rgba(46, 139, 87, 0.14);
+        color: var(--good);
+      }
+
+      .topic-warn {
+        background: rgba(196, 138, 29, 0.14);
+        color: var(--warn);
+      }
+
+      .topic-bad {
+        background: rgba(201, 73, 73, 0.14);
+        color: var(--bad);
+      }
+
+      .alert-card {
+        border-left: 5px solid var(--bad);
+        background: linear-gradient(180deg, #fff, #fff8f8);
+      }
+
+      .alert-card h4,
+      .recommendation-card h4 {
+        margin: 0 0 8px;
+      }
+
+      .empty-state {
+        padding: 18px;
+        border: 1px dashed var(--line);
+        border-radius: var(--radius-md);
+        background: var(--surface-soft);
+        color: var(--ink-soft);
+      }
+
+      .print-only {
+        display: none;
+      }
+
+      @media (max-width: 1100px) {
+        .app-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: static;
+          height: auto;
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .split-grid,
+        .class-grid,
+        .field-grid,
+        .stats-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        .sidebar,
+        .button,
+        .notes-panel,
+        .student-controls {
+          display: none !important;
+        }
+
+        .app-shell,
+        .content,
+        .section,
+        .panel,
+        .hero {
+          display: block;
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          box-shadow: none;
+          border: none;
+        }
+
+        .hero,
+        #student-view {
+          display: none !important;
+        }
+
+        .print-only {
+          display: block;
+          margin-bottom: 20px;
+        }
+
+        .panel {
+          page-break-inside: avoid;
+          margin-bottom: 24px;
+        }
+
+        .chart-shell canvas {
+          height: 260px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <p class="eyebrow">Teacher Dashboard</p>
+          <h1>Class Insight Dashboard</h1>
+          <p>Track student quiz performance, class trends, weak topics, and saved notes from one teacher-friendly page.</p>
+        </div>
+
+        <nav class="nav-list">
+          <a class="nav-link" href="#student-view">Individual Student View</a>
+          <a class="nav-link" href="#class-view">Overall Class View</a>
+          <a class="nav-link" href="#weak-alerts">Weak Topic Alerts</a>
+        </nav>
+
+        <div class="sidebar-actions">
+          <button id="export-pdf-button" class="button" type="button">Export PDF Summary</button>
+          <button id="reset-data-button" class="button secondary" type="button">Reset Sample Data</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <div class="print-only">
+          <h1>Class Insight Summary Report</h1>
+          <p>Class averages, weak topic alerts, and next-step recommendations.</p>
+        </div>
+
+        <section class="hero">
+          <p class="eyebrow">Snapshot</p>
+          <h2>One place for student progress, class patterns, and weak-topic follow-up.</h2>
+          <p>This dashboard reads student quiz data from <code>localStorage</code>, highlights weak areas, saves personal teacher notes per student, and exports a printable summary for meetings or planning.</p>
+        </section>
+
+        <section class="stats-row">
+          <article class="stat-card">
+            <span>Students</span>
+            <strong id="student-count-stat">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Class Average</span>
+            <strong id="class-average-stat">0%</strong>
+          </article>
+          <article class="stat-card">
+            <span>Weak Topics</span>
+            <strong id="weak-topic-count-stat">0</strong>
+          </article>
+          <article class="stat-card">
+            <span>Below 70 Flags</span>
+            <strong id="struggle-count-stat">0</strong>
+          </article>
+        </section>
+
+        <section id="student-view" class="section panel">
+          <div class="panel-head">
+            <div>
+              <h3>Section 1: Individual Student View</h3>
+              <p>Select a student to review quiz/topic scores, personal average, weak topics, chart history, and saved notes.</p>
+            </div>
+          </div>
+
+          <div class="split-grid">
+            <div class="student-controls">
+              <label>
+                Select Student
+                <select id="student-select"></select>
+              </label>
+              <div id="student-average-card" class="student-score-item">
+                <div>
+                  <strong>Personal Average</strong>
+                  <div class="microcopy">Average across all current topics.</div>
+                </div>
+                <span id="student-average-value" class="score-badge score-good">0%</span>
+              </div>
+
+              <div id="student-score-list" class="student-score-list"></div>
+
+              <section class="notes-panel">
+                <label>
+                  Teacher Notes For This Student
+                  <textarea id="student-notes" placeholder="Type personal notes, support ideas, parent follow-up, or next-step reminders."></textarea>
+                </label>
+                <button id="save-notes-button" class="button secondary" type="button">Save Student Notes</button>
+                <div id="notes-status" class="microcopy"></div>
+              </section>
+            </div>
+
+            <div class="chart-shell">
+              <canvas id="student-chart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <section id="class-view" class="section panel">
+          <div class="panel-head">
+            <div>
+              <h3>Section 2: Overall Class View</h3>
+              <p>Review class averages by topic and the overall performance trend across quizzes.</p>
+            </div>
+          </div>
+
+          <div class="class-grid">
+            <div>
+              <table class="class-average-table">
+                <thead>
+                  <tr>
+                    <th>Topic</th>
+                    <th>Class Average</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="class-average-table-body"></tbody>
+              </table>
+            </div>
+            <div class="chart-shell">
+              <canvas id="class-chart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <section id="weak-alerts" class="section panel">
+          <div class="panel-head">
+            <div>
+              <h3>Section 3: Weak Topic Alerts + Teacher Recommendations</h3>
+              <p>Any topic where more than 40% of students scored below 70% is flagged automatically for reteach or review.</p>
+            </div>
+          </div>
+
+          <div id="alert-list" class="alert-list"></div>
+          <div id="recommendation-list" class="recommendation-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const STORAGE_KEY = "students";
+      const TEACHERFLOW_SNAPSHOT_KEY = "teacherflowai_students_snapshot";
+      const NOTES_KEY = "studentNotes";
+      const SAMPLE_STUDENTS = [
+        { name: "Student A", scores: { Fractions: 55, Algebra: 80, Geometry: 70, Statistics: 90 } },
+        { name: "Student B", scores: { Fractions: 68, Algebra: 62, Geometry: 78, Statistics: 74 } },
+        { name: "Student C", scores: { Fractions: 88, Algebra: 91, Geometry: 83, Statistics: 79 } },
+        { name: "Student D", scores: { Fractions: 59, Algebra: 72, Geometry: 64, Statistics: 58 } },
+        { name: "Student E", scores: { Fractions: 76, Algebra: 67, Geometry: 92, Statistics: 81 } },
+      ];
+
+      const studentSelect = document.getElementById("student-select");
+      const studentAverageValue = document.getElementById("student-average-value");
+      const studentScoreList = document.getElementById("student-score-list");
+      const studentNotes = document.getElementById("student-notes");
+      const saveNotesButton = document.getElementById("save-notes-button");
+      const notesStatus = document.getElementById("notes-status");
+      const classAverageTableBody = document.getElementById("class-average-table-body");
+      const alertList = document.getElementById("alert-list");
+      const recommendationList = document.getElementById("recommendation-list");
+      const exportPdfButton = document.getElementById("export-pdf-button");
+      const resetDataButton = document.getElementById("reset-data-button");
+
+      let studentChart;
+      let classChart;
+
+      function ensureSeedData() {
+        const existing = localStorage.getItem(STORAGE_KEY);
+        if (!existing) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(SAMPLE_STUDENTS));
+        }
+        if (!localStorage.getItem(NOTES_KEY)) {
+          localStorage.setItem(NOTES_KEY, JSON.stringify({}));
+        }
+      }
+
+      function getStudents() {
+        ensureSeedData();
+        const teacherFlowSnapshot = localStorage.getItem(TEACHERFLOW_SNAPSHOT_KEY);
+        if (teacherFlowSnapshot) {
+          try {
+            const roster = JSON.parse(teacherFlowSnapshot);
+            if (Array.isArray(roster) && roster.length && roster[0].student_name) {
+              return roster.map((student) => ({
+                name: student.student_name,
+                scores:
+                  Array.isArray(student.topic_history) && student.topic_history.length
+                    ? student.topic_history.reduce((scores, entry) => {
+                        if (entry?.topic) {
+                          scores[entry.topic] = Number(entry.score) || 0;
+                        }
+                        return scores;
+                      }, {})
+                    : {
+                        "Quiz Average": Number(student.recent_quiz_avg) || 0,
+                        "Test Average": Number(student.recent_test_avg) || 0,
+                        Attendance: Number(student.attendance_percent) || 0,
+                        Participation: Math.round((Number(student.participation_score) || 0) * 20),
+                      },
+              }));
+            }
+          } catch {
+            // fall through to standalone data
+          }
+        }
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      }
+
+      function getNotes() {
+        ensureSeedData();
+        return JSON.parse(localStorage.getItem(NOTES_KEY) || "{}");
+      }
+
+      function setNotes(notes) {
+        localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+      }
+
+      function getTopics(students) {
+        return Object.keys(students[0]?.scores || {});
+      }
+
+      function average(values) {
+        return values.length ? Math.round(values.reduce((sum, value) => sum + value, 0) / values.length) : 0;
+      }
+
+      function getScoreClass(score) {
+        if (score > 75) return "good";
+        if (score >= 60) return "warn";
+        return "bad";
+      }
+
+      function buildScoreBadge(score) {
+        const level = score >= 75 ? "score-good" : score >= 60 ? "score-warn" : "score-bad";
+        return `<span class="score-badge ${level}">${score}%</span>`;
+      }
+
+      function renderSidebarStats(students) {
+        const topics = getTopics(students);
+        const allScores = students.flatMap((student) => topics.map((topic) => student.scores[topic]));
+        const weakTopics = detectWeakTopics(students, topics);
+        const struggleCount = students.reduce(
+          (count, student) => count + topics.filter((topic) => student.scores[topic] < 70).length,
+          0,
+        );
+
+        document.getElementById("student-count-stat").textContent = String(students.length);
+        document.getElementById("class-average-stat").textContent = `${average(allScores)}%`;
+        document.getElementById("weak-topic-count-stat").textContent = String(weakTopics.length);
+        document.getElementById("struggle-count-stat").textContent = String(struggleCount);
+      }
+
+      function renderStudentSelect(students) {
+        const currentValue = studentSelect.value;
+        studentSelect.innerHTML = students
+          .map((student) => `<option value="${student.name}">${student.name}</option>`)
+          .join("");
+        if (students.some((student) => student.name === currentValue)) {
+          studentSelect.value = currentValue;
+        }
+      }
+
+      function renderStudentView(students) {
+        const selectedName = studentSelect.value || students[0]?.name;
+        const student = students.find((entry) => entry.name === selectedName) || students[0];
+        if (!student) {
+          return;
+        }
+
+        const topics = Object.keys(student.scores);
+        const scores = topics.map((topic) => student.scores[topic]);
+        const studentAverage = average(scores);
+        const badgeClass = studentAverage >= 75 ? "score-good" : studentAverage >= 60 ? "score-warn" : "score-bad";
+        studentAverageValue.className = `score-badge ${badgeClass}`;
+        studentAverageValue.textContent = `${studentAverage}%`;
+
+        studentScoreList.innerHTML = topics
+          .map((topic) => {
+            const score = student.scores[topic];
+            return `
+              <article class="student-score-item ${score < 70 ? "bad" : ""}">
+                <div>
+                  <strong>${topic}</strong>
+                  <div class="microcopy">${score < 70 ? "Needs attention" : "On track"}</div>
+                </div>
+                ${buildScoreBadge(score)}
+              </article>
+            `;
+          })
+          .join("");
+
+        const notes = getNotes();
+        studentNotes.value = notes[student.name] || "";
+        notesStatus.textContent = "";
+
+        if (studentChart) {
+          studentChart.destroy();
+        }
+
+        studentChart = new Chart(document.getElementById("student-chart"), {
+          type: "bar",
+          data: {
+            labels: topics,
+            datasets: [
+              {
+                label: `${student.name} Scores`,
+                data: scores,
+                backgroundColor: scores.map((score) =>
+                  score < 70 ? "rgba(201, 73, 73, 0.7)" : score < 85 ? "rgba(196, 138, 29, 0.7)" : "rgba(46, 139, 87, 0.7)",
+                ),
+                borderRadius: 10,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: { callback: (value) => `${value}%` },
+              },
+            },
+          },
+        });
+      }
+
+      function renderClassView(students) {
+        const topics = getTopics(students);
+        const averages = topics.map((topic) => average(students.map((student) => student.scores[topic])));
+
+        classAverageTableBody.innerHTML = topics
+          .map((topic, index) => {
+            const score = averages[index];
+            const tone = score > 75 ? "topic-good" : score >= 60 ? "topic-warn" : "topic-bad";
+            const label = score > 75 ? "Healthy" : score >= 60 ? "Watch" : "Urgent";
+            return `
+              <tr>
+                <td><strong>${topic}</strong></td>
+                <td>${score}%</td>
+                <td><span class="topic-pill ${tone}">${label}</span></td>
+              </tr>
+            `;
+          })
+          .join("");
+
+        if (classChart) {
+          classChart.destroy();
+        }
+
+        classChart = new Chart(document.getElementById("class-chart"), {
+          type: "line",
+          data: {
+            labels: topics,
+            datasets: [
+              {
+                label: "Class Average",
+                data: averages,
+                borderColor: "#3157d7",
+                backgroundColor: "rgba(49, 87, 215, 0.12)",
+                tension: 0.28,
+                fill: true,
+                pointRadius: 6,
+                pointBackgroundColor: averages.map((score) =>
+                  score > 75 ? "#2e8b57" : score >= 60 ? "#c48a1d" : "#c94949",
+                ),
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (context) => `Class average: ${context.parsed.y}%`,
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: { callback: (value) => `${value}%` },
+              },
+            },
+          },
+        });
+      }
+
+      function detectWeakTopics(students, topics) {
+        return topics
+          .map((topic) => {
+            const strugglingStudents = students.filter((student) => student.scores[topic] < 70);
+            return {
+              topic,
+              strugglingStudents,
+              strugglingCount: strugglingStudents.length,
+              ratio: strugglingStudents.length / students.length,
+            };
+          })
+          .filter((entry) => entry.ratio > 0.4);
+      }
+
+      function renderWeakTopicAlerts(students) {
+        const topics = getTopics(students);
+        const weakTopics = detectWeakTopics(students, topics);
+
+        if (!weakTopics.length) {
+          alertList.innerHTML = `<div class="empty-state">No topic currently has more than 40% of students below 70%.</div>`;
+          recommendationList.innerHTML = "";
+          return;
+        }
+
+        alertList.innerHTML = weakTopics
+          .map(
+            (entry) => `
+              <article class="alert-card">
+                <h4>&#9888; ${entry.strugglingCount} out of ${students.length} students struggled with ${entry.topic}</h4>
+                <p class="microcopy">Students below 70%: ${entry.strugglingStudents.map((student) => student.name).join(", ")}</p>
+              </article>
+            `,
+          )
+          .join("");
+
+        recommendationList.innerHTML = weakTopics
+          .map(
+            (entry) => `
+              <article class="recommendation-card">
+                <h4>Recommended action: ${entry.topic}</h4>
+                <p>Prepare a review guide or re-teach this topic before the next assessment window.</p>
+              </article>
+            `,
+          )
+          .join("");
+      }
+
+      function saveCurrentStudentNotes() {
+        const students = getStudents();
+        const studentName = studentSelect.value || students[0]?.name;
+        if (!studentName) {
+          return;
+        }
+        const notes = getNotes();
+        notes[studentName] = studentNotes.value.trim();
+        setNotes(notes);
+        notesStatus.textContent = `Saved notes for ${studentName}.`;
+      }
+
+      function renderAll() {
+        const students = getStudents();
+        renderSidebarStats(students);
+        renderStudentSelect(students);
+        renderStudentView(students);
+        renderClassView(students);
+        renderWeakTopicAlerts(students);
+      }
+
+      studentSelect.addEventListener("change", () => {
+        renderStudentView(getStudents());
+      });
+
+      saveNotesButton.addEventListener("click", saveCurrentStudentNotes);
+
+      exportPdfButton.addEventListener("click", () => {
+        window.print();
+      });
+
+      resetDataButton.addEventListener("click", () => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(SAMPLE_STUDENTS));
+        localStorage.setItem(NOTES_KEY, JSON.stringify({}));
+        renderAll();
+      });
+
+      renderAll();
+    </script>
+  </body>
+</html>
