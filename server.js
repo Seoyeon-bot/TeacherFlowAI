@@ -2111,6 +2111,117 @@ function rewriteWhileLoopQuestion(question, versionIndex) {
   };
 }
 
+function rewriteClaimsEvidenceQuestion(question, versionIndex) {
+  const questionNumber = Number(question.number || 0);
+  const label = getVersionLabel(versionIndex);
+  const scenarios = [
+    {
+      name: "Jordan",
+      setting: "recycling drive",
+      trait: "organized and dependable",
+      weakTrait: "careless",
+      passage:
+        "Jordan arrived before the recycling drive began and sorted the collection bins by material. When several volunteers looked unsure, Jordan handed out the schedule, explained where each group should stand, and checked that every table had gloves and labels before families arrived.",
+      claimOptions: [
+        { label: "A", text: "Jordan avoids working with groups." },
+        { label: "B", text: "Jordan is organized and dependable." },
+        { label: "C", text: "Jordan dislikes community events." },
+        { label: "D", text: "Jordan is careless with supplies." },
+      ],
+      answer: "B",
+      evidence: "Jordan handed out the schedule and checked that every table had gloves and labels.",
+    },
+    {
+      name: "Leah",
+      setting: "library fundraiser",
+      trait: "helpful and prepared",
+      weakTrait: "unprepared",
+      passage:
+        "Leah reached the library fundraiser with a folder of price signs and a list of volunteer jobs. When the donation table became crowded, she calmly moved extra books to a second table, asked two classmates to greet visitors, and reminded everyone where the checkout box was.",
+      claimOptions: [
+        { label: "A", text: "Leah is helpful and prepared." },
+        { label: "B", text: "Leah wants visitors to leave." },
+        { label: "C", text: "Leah forgets important materials." },
+        { label: "D", text: "Leah refuses to work with classmates." },
+      ],
+      answer: "A",
+      evidence: "Leah brought price signs, a volunteer list, and calmly reorganized the crowded table.",
+    },
+  ];
+  const scenario = scenarios[versionIndex % scenarios.length];
+  const passageBody = [`Read the passage: ${scenario.passage}`];
+
+  if (questionNumber === 1 || question.type === "multiple_choice") {
+    return {
+      ...question,
+      stem: `Which sentence best states a claim about ${scenario.name}'s character?`,
+      body: passageBody,
+      options: scenario.claimOptions,
+      answer: scenario.answer,
+      solvedAnswer: `Correct answer: ${scenario.answer}. The passage shows that ${scenario.name} is ${scenario.trait}.`,
+      teacherNote: `Version ${label} changes the passage and answer choices while keeping the claim-evidence skill.`,
+    };
+  }
+
+  if (questionNumber === 2) {
+    return {
+      ...question,
+      stem: `Copy one piece of evidence from the passage that supports the claim that ${scenario.name} is ${scenario.trait}.`,
+      body: [],
+      options: [],
+      answer: scenario.evidence,
+      solvedAnswer: `A strong answer should quote or paraphrase evidence such as: ${scenario.evidence}`,
+      teacherNote: `Version ${label} asks students to identify relevant textual evidence.`,
+    };
+  }
+
+  if (questionNumber === 3) {
+    return {
+      ...question,
+      stem: `Explain how your evidence proves that ${scenario.name} is ${scenario.trait}.`,
+      body: [],
+      options: [],
+      answer: `The evidence supports the claim because it shows ${scenario.name} taking specific actions that match the trait.`,
+      solvedAnswer: `Students should connect the evidence directly to ${scenario.trait}, not just repeat the quotation.`,
+      teacherNote: `Version ${label} preserves the explanation skill with a new passage.`,
+    };
+  }
+
+  if (questionNumber === 4) {
+    return {
+      ...question,
+      stem: `Write a different claim about ${scenario.name} using your own words.`,
+      body: [],
+      options: [],
+      answer: `Accept a defensible claim such as: ${scenario.name} is a strong problem-solver.`,
+      solvedAnswer: `A complete response states a clear claim that can be supported by the passage.`,
+      teacherNote: `Version ${label} checks independent claim writing.`,
+    };
+  }
+
+  if (questionNumber === 5) {
+    return {
+      ...question,
+      stem: `Choose one detail from the passage that would not strongly support the claim "${scenario.name} is ${scenario.weakTrait}." Explain why it does not fit.`,
+      body: [],
+      options: [],
+      answer: `Students should choose a detail that shows preparation or responsibility and explain why it contradicts ${scenario.weakTrait}.`,
+      solvedAnswer: `A strong response explains that the selected detail points away from the weak claim.`,
+      teacherNote: `Version ${label} asks students to reject weak evidence.`,
+    };
+  }
+
+  return {
+    ...question,
+    stem: `Write a short paragraph using this frame: ${scenario.name} is ___ because ___. This shows ___ because ___.`,
+    body: [],
+    options: [],
+    answer: `Responses should include a claim, evidence, and reasoning tied to ${scenario.name}.`,
+    solvedAnswer: `Look for one clear claim, one relevant evidence detail, and one explanation sentence.`,
+    teacherNote: `Version ${label} keeps the paragraph structure but uses a new passage.`,
+  };
+}
+
 function rewriteGenericQuestion(question, versionIndex, context) {
   const prompt = buildQuestionPrompt(question);
   const label = getVersionLabel(versionIndex);
@@ -2123,6 +2234,10 @@ function rewriteGenericQuestion(question, versionIndex, context) {
   const codeOutputPrompt = versionIndex === 0 ? "What will the following code segment output?" : "What is the final output of this code segment?";
   const coordinatePrompt = versionIndex === 0 ? "In a graphics canvas, where is the following point?" : "Identify the location of this point on the graphics canvas.";
   const tracePrompt = versionIndex === 0 ? "Consider the following pseudocode. What value is stored in variable c?" : "Trace the pseudocode below. What value ends in variable c?";
+
+  if (/claim|evidence|Maya|character/i.test(`${context.topic} ${prompt}`)) {
+    return rewriteClaimsEvidenceQuestion(question, versionIndex);
+  }
 
   if (/14 % 4|%\s*4|printed to the screen/i.test(prompt)) {
     return {
@@ -2392,6 +2507,8 @@ function createParallelAssessment(blueprint, context, versionIndex) {
       questions: section.questions.map((question) =>
         /while loop|while loops/i.test(context.topic) || /while loop|while loops/i.test(buildQuestionPrompt(question))
           ? rewriteWhileLoopQuestion(question, versionIndex)
+          : /claim|evidence|Maya|character/i.test(`${context.topic} ${buildQuestionPrompt(question)}`)
+            ? rewriteClaimsEvidenceQuestion(question, versionIndex)
           : isMathFocusedQuestion(question, context)
             ? rewriteMathQuestion(question, versionIndex)
           : rewriteGenericQuestion(question, versionIndex, context),
@@ -3764,6 +3881,8 @@ async function serveStatic(req, res, url) {
     ".jpeg": "image/jpeg",
     ".svg": "image/svg+xml",
     ".ico": "image/x-icon",
+    ".txt": "text/plain; charset=utf-8",
+    ".md": "text/markdown; charset=utf-8",
   };
 
   res.writeHead(200, {

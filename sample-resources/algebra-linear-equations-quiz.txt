@@ -1,0 +1,18 @@
+Algebra I Exit Quiz: Linear Equations
+Class: Algebra I
+Grade: 9
+Objective: Students will solve one-step and two-step linear equations and explain each step.
+
+Directions: Show your work. Circle your final answer.
+
+1. Solve for x: x + 7 = 19
+
+2. Solve for y: 3y = 27
+
+3. Solve for n: 2n - 5 = 13
+
+4. Solve for a: 4a + 6 = 30
+
+5. A student says the solution to 5x - 10 = 20 is x = 2. Explain the mistake and find the correct solution.
+
+6. Write and solve an equation: A notebook costs $4. A student buys some notebooks and pays $28 total. How many notebooks did the student buy?

@@ -365,6 +365,7 @@ const repurposeOutput = document.querySelector("#repurpose-output");
 const repurposeFile = document.querySelector("#repurpose-file");
 const clearRepurposeFileButton = document.querySelector("#clear-repurpose-file");
 const repurposeFileStatus = document.querySelector("#repurpose-file-status");
+const sampleResourceButtons = document.querySelectorAll("[data-sample-resource]");
 const supportSummary = document.querySelector("#support-summary");
 const highSupportList = document.querySelector("#high-support-list");
 const moderateSupportList = document.querySelector("#moderate-support-list");
@@ -502,6 +503,62 @@ const DEFAULT_EMAIL_PROVIDER = {
   username: "",
   fromAddress: "",
   hasPassword: false,
+};
+
+const SAMPLE_ASSESSMENT_RESOURCES = {
+  "math-quiz": {
+    sourceType: "quiz",
+    targetType: "parallel-assessment",
+    versionCount: 2,
+    text: `Algebra I Exit Quiz: Linear Equations
+Class: Algebra I
+Grade: 9
+Objective: Students will solve one-step and two-step linear equations and explain each step.
+
+Directions: Show your work. Circle your final answer.
+
+1. Solve for x: x + 7 = 19
+
+2. Solve for y: 3y = 27
+
+3. Solve for n: 2n - 5 = 13
+
+4. Solve for a: 4a + 6 = 30
+
+5. A student says the solution to 5x - 10 = 20 is x = 2. Explain the mistake and find the correct solution.
+
+6. Write and solve an equation: A notebook costs $4. A student buys some notebooks and pays $28 total. How many notebooks did the student buy?`,
+  },
+  "ela-worksheet": {
+    sourceType: "worksheet",
+    targetType: "parallel-assessment",
+    versionCount: 2,
+    text: `English 9 Worksheet: Making Claims With Evidence
+Class: English 9
+Grade: 9
+Objective: Students will identify a claim, choose relevant evidence, and explain how the evidence supports the claim.
+
+Read the passage:
+Maya arrived early to the community garden on Saturday. The gate was still locked, so she waited with the box of seed packets balanced against her hip. When Mr. Lopez finally arrived, he apologized for being late. Maya smiled, handed him the sign-up sheet she had made, and started assigning volunteers to the vegetable beds before anyone asked her what to do.
+
+Questions:
+
+1. Which sentence best states a claim about Maya's character?
+A. Maya likes vegetables.
+B. Maya is responsible and prepared.
+C. Maya does not enjoy waiting.
+D. Maya works alone.
+
+2. Copy one piece of evidence from the passage that supports your answer to question 1.
+
+3. Explain how your evidence supports the claim.
+
+4. Write a different claim about Maya using your own words.
+
+5. Choose one detail from the passage that would not strongly support the claim "Maya is careless." Explain why it does not fit.
+
+6. Write a short paragraph using this frame: Maya is ___ because ___. This shows ___ because ___.`,
+  },
 };
 
 const demoScenes = [
@@ -1400,6 +1457,30 @@ function setRepurposeFileStatus(message) {
     return;
   }
   repurposeFileStatus.textContent = message;
+}
+
+function loadSampleAssessmentResource(sampleKey) {
+  const sample = SAMPLE_ASSESSMENT_RESOURCES[sampleKey];
+  if (!sample || !repurposeForm) {
+    return;
+  }
+
+  const sourceType = repurposeForm.elements.sourceType;
+  const targetType = repurposeForm.elements.targetType;
+  const versionCount = repurposeForm.elements.versionCount;
+  const resourceText = repurposeForm.elements.resourceText;
+
+  if (sourceType) sourceType.value = sample.sourceType;
+  if (targetType) targetType.value = sample.targetType;
+  if (versionCount) versionCount.value = String(sample.versionCount);
+  if (resourceText) {
+    resourceText.value = sample.text;
+    resourceText.focus();
+  }
+  if (repurposeFile) {
+    repurposeFile.value = "";
+  }
+  setRepurposeFileStatus("Sample loaded. Click Build New Version to generate parallel versions.");
 }
 
 function parseDurationMinutes(value) {
@@ -4624,6 +4705,12 @@ clearRepurposeFileButton?.addEventListener("click", () => {
   setRepurposeFileStatus("No file selected.");
 });
 
+sampleResourceButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    loadSampleAssessmentResource(button.dataset.sampleResource);
+  });
+});
+
 function closeMobileNav() {
   navMenu?.classList.remove("open");
   navToggle?.setAttribute("aria-expanded", "false");
@@ -5167,13 +5254,17 @@ document.addEventListener("click", (event) => {
 
   const versionTabButton = event.target.closest("[data-assessment-version-tab]");
   if (versionTabButton) {
+    const versionViewer = versionTabButton.closest(".assessment-version-viewer");
+    if (!versionViewer) {
+      return;
+    }
     activeAssessmentPreviewIndex = Number(versionTabButton.dataset.assessmentVersionTab);
-    document.querySelectorAll("[data-assessment-version-tab]").forEach((button) => {
+    versionViewer.querySelectorAll("[data-assessment-version-tab]").forEach((button) => {
       const isActive = Number(button.dataset.assessmentVersionTab) === activeAssessmentPreviewIndex;
       button.classList.toggle("active", isActive);
       button.setAttribute("aria-selected", isActive ? "true" : "false");
     });
-    document.querySelectorAll("[data-assessment-version-panel]").forEach((panel) => {
+    versionViewer.querySelectorAll("[data-assessment-version-panel]").forEach((panel) => {
       panel.classList.toggle("active", Number(panel.dataset.assessmentVersionPanel) === activeAssessmentPreviewIndex);
       panel.classList.toggle("is-hidden", Number(panel.dataset.assessmentVersionPanel) !== activeAssessmentPreviewIndex);
     });

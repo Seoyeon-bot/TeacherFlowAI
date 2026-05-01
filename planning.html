@@ -230,11 +230,51 @@
                     <input name="versionCount" type="number" min="2" max="6" step="1" value="2" />
                   </label>
                 </div>
+                <div class="sample-resource-panel">
+                  <div class="sample-file-head">
+                    <div>
+                      <span class="metric-label">Try A Sample</span>
+                      <p class="microcopy">Load example text into the paste box, then click Build New Version.</p>
+                    </div>
+                  </div>
+                  <div class="sample-file-grid">
+                    <button class="sample-file-card sample-action-card" type="button" data-sample-resource="math-quiz">
+                      <span class="sample-file-type">LOAD</span>
+                      <strong>Math Quiz</strong>
+                      <small>Fills the builder with linear equations</small>
+                    </button>
+                    <button class="sample-file-card sample-action-card" type="button" data-sample-resource="ela-worksheet">
+                      <span class="sample-file-type">LOAD</span>
+                      <strong>ELA Worksheet</strong>
+                      <small>Fills the builder with claims and evidence</small>
+                    </button>
+                  </div>
+                </div>
                 <label>Paste Existing Resource<textarea name="resourceText" rows="10" placeholder="Paste notes, worksheet text, rubric descriptors, or an assessment prompt here. You can also leave this blank and upload a file instead."></textarea></label>
                 <label>
                   Or Upload Existing File
                   <input id="repurpose-file" name="resourceFile" type="file" accept=".txt,.md,.csv,.tsv,.json,.html,.doc,.docx,.pdf" />
                 </label>
+                <div class="sample-file-panel">
+                  <div class="sample-file-head">
+                    <div>
+                      <span class="metric-label">Sample Upload Files</span>
+                      <p class="microcopy">Download one file, upload it with Choose File, then build parallel versions.</p>
+                    </div>
+                  </div>
+                  <div class="sample-file-grid">
+                    <a class="sample-file-card" href="./sample-resources/algebra-linear-equations-quiz.txt" download>
+                      <span class="sample-file-type">TXT</span>
+                      <strong>Algebra Quiz</strong>
+                      <small>Linear equations, 6 questions</small>
+                    </a>
+                    <a class="sample-file-card" href="./sample-resources/ela-claims-evidence-worksheet.txt" download>
+                      <span class="sample-file-type">TXT</span>
+                      <strong>ELA Worksheet</strong>
+                      <small>Claims, evidence, short response</small>
+                    </a>
+                  </div>
+                </div>
                 <div class="panel-callout">
                   Best results come from typed text, DOCX, or text-based PDFs. Graph-heavy PDFs, scanned worksheets, and image-style PDFs may not import correctly into the assessment builder.
                 </div>
